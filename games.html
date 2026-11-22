@@ -1,0 +1,2538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <title>Cozy Coding Arcade</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f2fb;
+      --panel: #fff;
+      --line: #e2dbf2;
+      --ink: #1f1b2e;
+      --soft: #625b78;
+      --accent: #8a63e8;
+      --at: #efe9ff;
+      --peach: #f2a272;
+      --pt: #fff1e8;
+      --pd: #b5622f;
+      --ok: #1f9d63;
+      --bad: #d6414f;
+      --code: #17141f;
+      --cl: #2c2640;
+      --ct: #e8e3fa;
+      --bar: #232230;
+      --sh: 0 1px 2px rgba(40, 20, 90, .06), 0 12px 32px rgba(40, 20, 90, .08);
+      --display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+      --sans: "Figtree", "Segoe UI", system-ui, sans-serif;
+      --mono: "JetBrains Mono", Consolas, Menlo, monospace;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      color-scheme: light;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #13101c;
+        --panel: #1c1829;
+        --line: #342c4c;
+        --ink: #efeaff;
+        --soft: #a69fc0;
+        --accent: #a98bff;
+        --at: #2a2145;
+        --pt: #33241f;
+        --pd: #ffb88f;
+        --ok: #4fd699;
+        --bad: #ff7b86;
+        --code: #0f0c17;
+        --sh: 0 12px 32px rgba(0, 0, 0, .4);
+        color-scheme: dark;
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #13101c;
+      --panel: #1c1829;
+      --line: #342c4c;
+      --ink: #efeaff;
+      --soft: #a69fc0;
+      --accent: #a98bff;
+      --at: #2a2145;
+      --pt: #33241f;
+      --pd: #ffb88f;
+      --ok: #4fd699;
+      --bad: #ff7b86;
+      --code: #0f0c17;
+      --sh: 0 12px 32px rgba(0, 0, 0, .4);
+      color-scheme: dark;
+    }
+
+    html {
+      scroll-padding-top: env(safe-area-inset-top, 0px);
+      scroll-behavior: smooth;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      background:
+        radial-gradient(900px 420px at 88% -4%, rgba(138, 99, 232, .18), transparent 70%),
+        radial-gradient(700px 420px at -4% 14%, rgba(242, 162, 114, .16), transparent 70%),
+        var(--bg);
+      background-attachment: fixed;
+      color: var(--ink);
+      font: 400 16.5px/1.7 var(--sans);
+      overflow-x: hidden;
+      min-height: 100dvh;
+      position: relative;
+    }
+    body.ns { overflow: hidden; }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0 0 auto;
+      height: env(safe-area-inset-top, 0px);
+      background: var(--bg);
+      z-index: 1300;
+    }
+
+    button { font: inherit; color: inherit; cursor: pointer; }
+    :focus-visible { outline: 3px solid var(--peach); outline-offset: 2px; }
+
+    /* =========================================================
+       AMBIENT FLOATING ARCADE CHARACTERS & SPARKLES
+       Swap any sprite via [data-sprite-src="path/to/img.png"]
+       ========================================================= */
+    .ambient-stage {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    .float-sprite {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      user-select: none;
+      pointer-events: none;
+      opacity: .72;
+      filter: drop-shadow(0 8px 18px rgba(40, 20, 90, .14));
+      will-change: transform;
+    }
+
+    .float-sprite img.custom-sprite-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: none;
+      border-radius: 12px;
+    }
+    .float-sprite.has-custom-img img.custom-sprite-img { display: block; }
+    .float-sprite.has-custom-img .sprite-fallback { display: none; }
+
+    .sprite-badge {
+      font-size: 28px;
+      line-height: 1;
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--sh);
+      display: grid;
+      place-items: center;
+    }
+
+    .sparkle-glyph {
+      font-family: var(--mono);
+      font-weight: 700;
+      color: var(--accent);
+      opacity: .26;
+    }
+
+    .sp-cat { top: 15%; left: 3%; animation: driftBob 7.2s ease-in-out infinite; }
+    .sp-bee { top: 24%; right: 4%; animation: driftZig 8.5s ease-in-out infinite; }
+    .sp-ghost { bottom: 20%; left: 4%; animation: driftBob 9s ease-in-out 1.2s infinite; }
+    .sp-cartridge { bottom: 14%; right: 3.5%; animation: driftTilt 7.8s ease-in-out .6s infinite; }
+
+    .sp-tok-1 { top: 18%; left: 18%; font-size: 15px; color: var(--peach); animation: floatUpSlow 14s linear infinite; }
+    .sp-tok-2 { top: 42%; right: 14%; font-size: 17px; color: var(--accent); animation: floatUpSlow 17s linear 3s infinite; }
+    .sp-tok-3 { top: 68%; left: 22%; font-size: 14px; color: var(--pd); animation: floatUpSlow 15s linear 6s infinite; }
+    .sp-tok-4 { top: 55%; right: 22%; font-size: 16px; color: var(--accent); animation: floatUpSlow 19s linear 2s infinite; }
+
+    @keyframes driftBob {
+      0%, 100% { transform: translateY(0px) rotate(-3deg); }
+      50% { transform: translateY(-14px) rotate(4deg); }
+    }
+    @keyframes driftZig {
+      0%, 100% { transform: translate(0px, 0px) rotate(2deg); }
+      50% { transform: translate(-12px, -10px) rotate(-5deg); }
+    }
+    @keyframes driftTilt {
+      0%, 100% { transform: translateY(0px) rotate(4deg); }
+      50% { transform: translateY(-11px) rotate(-4deg); }
+    }
+    @keyframes floatUpSlow {
+      0% { transform: translateY(24px) rotate(0deg); opacity: 0; }
+      20% { opacity: .28; }
+      80% { opacity: .28; }
+      100% { transform: translateY(-48px) rotate(12deg); opacity: 0; }
+    }
+
+    @media (max-width: 900px) {
+      .float-sprite.edge-only { display: none; }
+    }
+
+    /* Sticky Glassmorphic Navigation Bar */
+    header {
+      position: sticky;
+      top: env(safe-area-inset-top, 0px);
+      z-index: 1200;
+      padding: 10px 14px;
+      pointer-events: none;
+    }
+    .nb {
+      pointer-events: auto;
+      max-width: 1060px;
+      margin: 0 auto;
+      height: 58px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 0 10px 0 8px;
+      border-radius: 20px;
+      background: linear-gradient(120deg, rgba(30, 27, 46, .93), rgba(56, 40, 96, .93));
+      -webkit-backdrop-filter: blur(18px) saturate(160%);
+      backdrop-filter: blur(18px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, .14);
+      box-shadow: 0 14px 34px rgba(40, 20, 90, .3), inset 0 1px 0 rgba(255, 255, 255, .12);
+    }
+    .l, .r { display: flex; align-items: center; gap: 10px; }
+
+    .ib {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border: 0;
+      background: rgba(255, 255, 255, .09);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 17px;
+      transition: background .2s, transform .15s;
+    }
+    .ib:hover { background: rgba(255, 255, 255, .18); }
+    .ib:active { transform: scale(.92); }
+
+    .logo { display: flex; align-items: center; gap: 9px; text-decoration: none; color: #fff; padding-left: 4px; }
+    .lb {
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent), var(--peach));
+      font: 700 13.5px var(--mono);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(242, 162, 114, .4);
+      transform: rotate(-6deg);
+      transition: transform .25s;
+    }
+    .logo:hover .lb { transform: rotate(4deg) scale(1.06); }
+    .wm { font: 800 20px var(--display); letter-spacing: -.03em; }
+    .wm i { font-style: normal; color: var(--peach); }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 15px;
+      background: rgba(0, 0, 0, .28);
+      border: 1px solid rgba(255, 255, 255, .08);
+    }
+    .tabs a, .tabs button {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 14px;
+      height: 36px;
+      border-radius: 11px;
+      border: 0;
+      background: transparent;
+      font-weight: 600;
+      font-size: 14px;
+      color: #c9c4de;
+      text-decoration: none;
+      transition: background .2s, color .2s;
+    }
+    .tabs a:hover, .tabs button:hover { color: #fff; background: rgba(255, 255, 255, .1); }
+    .tabs a.on {
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), #b08cff);
+      box-shadow: 0 4px 14px rgba(138, 99, 232, .5);
+    }
+
+    .chip {
+      --p: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 12px 4px 5px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, .09);
+      color: #fff;
+      font: 600 13px var(--sans);
+    }
+    .chip i {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: conic-gradient(var(--peach) calc(var(--p) * 1%), rgba(255, 255, 255, .18) 0);
+      display: grid;
+      place-items: center;
+      transition: background .4s ease;
+    }
+    .chip i::after {
+      content: "";
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #2a2340;
+    }
+
+    /* Main Layout & Hero Card */
+    main {
+      position: relative;
+      z-index: 2;
+      max-width: 1020px;
+      margin: 0 auto;
+      padding: 20px 20px 96px;
+    }
+
+    h1 { font: 800 clamp(32px, 6vw, 50px)/1.06 var(--display); letter-spacing: -.035em; margin-bottom: 12px; }
+    h2 { font: 700 24px var(--display); letter-spacing: -.02em; margin-bottom: 4px; }
+    p { margin-bottom: 12px; max-width: 68ch; }
+    code {
+      font-family: var(--mono);
+      font-size: .88em;
+      background: var(--pt);
+      color: var(--pd);
+      padding: 1px 6px;
+      border-radius: 6px;
+    }
+
+    .hd {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(520px 270px at 86% 0, rgba(138, 99, 232, .58), transparent 70%),
+        radial-gradient(440px 260px at 0 100%, rgba(242, 162, 114, .34), transparent 70%),
+        repeating-linear-gradient(
+          0deg,
+          rgba(255, 255, 255, .02) 0px,
+          rgba(255, 255, 255, .02) 1px,
+          transparent 1px,
+          transparent 4px
+        ),
+        #1d1a2b;
+      color: #fff;
+      border-radius: 24px;
+      padding: 30px 28px 26px;
+      box-shadow: var(--sh);
+      margin-bottom: 34px;
+      border: 1px solid rgba(255, 255, 255, .1);
+    }
+
+    .hero-mascot {
+      position: absolute;
+      right: 26px;
+      top: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .14);
+      padding: 8px 14px;
+      border-radius: 99px;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: #efeaff;
+      animation: heroMascotFloat 4.6s ease-in-out infinite;
+    }
+    .hero-mascot .mascot-emoji { font-size: 20px; }
+    @keyframes heroMascotFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    @media (max-width: 720px) {
+      .hero-mascot { display: none; }
+    }
+
+    .hd .k {
+      color: var(--peach);
+      font: 700 13px var(--mono);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .hd h1 { margin: 4px 0 12px; color: #fff; }
+    .hd .sub { color: #cfcae6; font-size: 16px; max-width: 58ch; margin-bottom: 20px; }
+
+    .hero-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .hero-pill {
+      background: rgba(255, 255, 255, .09);
+      border: 1px solid rgba(255, 255, 255, .14);
+      padding: 6px 14px;
+      border-radius: 99px;
+      font-size: 13.5px;
+      color: #efeaff;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .hero-pill strong { color: var(--peach); font-family: var(--mono); }
+
+    /* Buttons */
+    .btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-weight: 600;
+      background: var(--peach);
+      color: #2a1608;
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: center;
+      text-decoration: none;
+      box-shadow: 0 4px 0 rgba(181, 98, 47, .35);
+      transition: filter .18s, transform .15s, box-shadow .15s;
+    }
+    .btn:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); }
+    .btn:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 rgba(181, 98, 47, .35); }
+    .btn.g {
+      background: var(--panel);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      box-shadow: 0 2px 0 var(--line);
+    }
+    .btn.v {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 0 rgba(86, 54, 166, .45);
+    }
+    .btn:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
+
+    /* Section Heading */
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .section-head p { color: var(--soft); margin: 0; font-size: 15.5px; }
+
+    /* 5-Game Grid using .ex elevated card style */
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 18px;
+    }
+
+    .ex {
+      position: relative;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px;
+      box-shadow: var(--sh);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+    .ex:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent);
+      box-shadow: 0 16px 36px rgba(138, 99, 232, .16);
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .game-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: var(--at);
+      border: 1px solid var(--line);
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      transition: transform .25s ease;
+    }
+    .ex:hover .game-icon {
+      transform: scale(1.08) rotate(-4deg);
+    }
+    .badge-pill {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 99px;
+      background: var(--pt);
+      color: var(--pd);
+      border: 1px solid rgba(242, 162, 114, .35);
+    }
+    .badge-pill.mastered {
+      background: rgba(31, 157, 99, .14);
+      color: var(--ok);
+      border-color: rgba(31, 157, 99, .35);
+    }
+
+    .ex h3 {
+      font: 700 20px var(--display);
+      letter-spacing: -.015em;
+      margin-bottom: 8px;
+      color: var(--ink);
+    }
+    .ex p {
+      color: var(--soft);
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .ex .btn { width: 100%; }
+
+    /* Cozy How-to-Play / Cartridge Guide Strip */
+    .guide-strip {
+      margin-top: 38px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: var(--sh);
+    }
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .guide-tip {
+      background: var(--at);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    .guide-tip strong {
+      display: block;
+      font-family: var(--display);
+      font-size: 15.5px;
+      margin-bottom: 4px;
+      color: var(--ink);
+    }
+    .guide-tip span {
+      font-size: 13.5px;
+      color: var(--soft);
+      line-height: 1.5;
+      display: block;
+    }
+
+    footer {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 32px 20px;
+      color: var(--soft);
+      font-size: 14px;
+      border-top: 1px solid var(--line);
+      max-width: 1020px;
+      margin: 0 auto;
+    }
+
+    /* =========================================================
+       FULL-SCREEN ARCADE MODAL (.md) & CODE WINDOW (.cw / .cb)
+       ========================================================= */
+    .md {
+      display: none;
+      position: fixed;
+      inset: 0;
+      height: 100dvh;
+      background: var(--bar);
+      z-index: 2000;
+      flex-direction: column;
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+    .md.open { display: flex; }
+
+    .mt {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 16px;
+      background: #1d1a29;
+      border-bottom: 1px solid var(--cl);
+      color: #fff;
+      flex-shrink: 0;
+    }
+    .mt .l { gap: 12px; }
+    .mt .btn.g {
+      background: rgba(255, 255, 255, .1);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, .14);
+      min-height: 36px;
+      padding: 6px 14px;
+      font-size: 13.5px;
+      box-shadow: none;
+    }
+    .mt .btn.g:hover { background: rgba(255, 255, 255, .18); }
+
+    .modal-title {
+      font: 700 16px var(--display);
+      letter-spacing: -.01em;
+      color: #fff;
+    }
+
+    .hud-bar {
+      background: #17141f;
+      border-bottom: 1px solid var(--cl);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      color: #c9c4de;
+      font-size: 13.5px;
+      flex-shrink: 0;
+    }
+    .hud-group { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .hud-val { font-family: var(--mono); font-weight: 700; color: var(--peach); }
+    .hud-val.ok { color: var(--ok); }
+    .hud-val.bad { color: var(--bad); }
+
+    .track { height: 6px; border-radius: 0; background: var(--cl); overflow: hidden; flex-shrink: 0; }
+    .fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--peach));
+      transition: width .25s linear;
+    }
+
+    .md-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 22px 18px 40px;
+      display: flex;
+      justify-content: center;
+    }
+    .md-inner {
+      width: 100%;
+      max-width: 840px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Feedback Banner */
+    .fb-banner {
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14.5px;
+      font-weight: 500;
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid var(--cl);
+      color: var(--ct);
+    }
+    .fb-banner.ok {
+      background: rgba(31, 157, 99, .18);
+      border-color: rgba(79, 214, 153, .45);
+      color: #8cf2c2;
+    }
+    .fb-banner.bad {
+      background: rgba(214, 65, 79, .18);
+      border-color: rgba(255, 123, 134, .45);
+      color: #ffadb5;
+    }
+    .fb-banner.peach {
+      background: rgba(242, 162, 114, .16);
+      border-color: rgba(242, 162, 114, .45);
+      color: #ffd0b3;
+    }
+
+    /* Code Window (.cw / .cb / .cp) */
+    .cw {
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--code);
+      border: 1px solid var(--cl);
+    }
+    .cb {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--cl);
+      background: #201b2e;
+    }
+    .cb i { width: 10px; height: 10px; border-radius: 50%; background: #ff5f57; display: inline-block; }
+    .cb i:nth-child(2) { background: #febc2e; }
+    .cb i:nth-child(3) { background: #28c840; }
+    .cb span { margin-left: 8px; font: 12px var(--mono); color: #9c95b8; }
+    .cp {
+      padding: 16px 18px;
+      font: 400 14px/1.7 var(--mono);
+      overflow-x: auto;
+      white-space: pre;
+      color: var(--ct);
+      tab-size: 2;
+    }
+    .tk-tag { color: #f2a272; }
+    .tk-punc { color: #8e85b0; }
+    .tk-attr { color: #b79cff; }
+    .tk-str { color: #a9dc76; }
+    .tk-doc { color: #8e85b0; font-style: italic; }
+
+    /* =========================================================
+       GAME 1: TAG MATCHER
+       ========================================================= */
+    .tag-hero {
+      background: #1b1826;
+      border: 1px solid var(--cl);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      color: #fff;
+    }
+    .tag-hero .lbl {
+      font: 700 11.5px var(--mono);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: #9c95b8;
+      margin-bottom: 10px;
+    }
+    .tag-pill-code {
+      display: inline-block;
+      font: 700 clamp(20px, 3.5vw, 28px) var(--mono);
+      color: var(--peach);
+      background: var(--code);
+      border: 1px solid var(--cl);
+      padding: 10px 24px;
+      border-radius: 12px;
+    }
+    .tag-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 600px) { .tag-grid { grid-template-columns: 1fr; } }
+
+    .tag-choice {
+      background: #1b1826;
+      border: 1px solid var(--cl);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: left;
+      color: var(--ct);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      min-height: 116px;
+      transition: transform .16s, border-color .16s, background .16s;
+    }
+    .tag-choice:hover { border-color: var(--peach); transform: translateY(-2px); background: #231f32; }
+    .tag-choice.ok-flash { border-color: var(--ok); background: rgba(31, 157, 99, .22); }
+    .tag-choice.bad-flash { border-color: var(--bad); background: rgba(214, 65, 79, .22); animation: shake .28s ease; }
+    .tag-desc { font-size: 13px; color: #a69fc0; }
+
+    .mk-btn { background: var(--peach); color: #2a1608; font-weight: 700; font-size: 13px; padding: 6px 14px; border-radius: 8px; width: fit-content; }
+    .mk-quote { border-left: 3px solid var(--accent); padding-left: 10px; font-style: italic; font-size: 13.5px; color: #fff; }
+    .mk-kbd { font-family: var(--mono); background: var(--code); border: 1px solid #4d436e; border-bottom-width: 3px; padding: 2px 8px; border-radius: 6px; font-size: 12px; color: #fff; }
+    .mk-prog { width: 100%; height: 12px; background: var(--code); border-radius: 99px; overflow: hidden; border: 1px solid var(--cl); }
+    .mk-prog > span { display: block; width: 74%; height: 100%; background: linear-gradient(90deg, var(--accent), var(--peach)); }
+    .mk-details { background: var(--code); padding: 8px 12px; border-radius: 8px; font-size: 13px; border: 1px solid var(--cl); }
+    .mk-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .mk-table th, .mk-table td { border: 1px solid var(--cl); padding: 4px 8px; text-align: left; }
+    .mk-table th { background: #241f35; color: var(--peach); }
+    .mk-mark { background: var(--peach); color: #2a1608; padding: 1px 6px; border-radius: 4px; font-weight: 700; }
+    .mk-code { font-family: var(--mono); background: var(--code); color: #b79cff; padding: 2px 7px; border-radius: 5px; font-size: 12.5px; }
+    .mk-field { border: 1px solid #4b426b; border-radius: 8px; padding: 8px 10px; font-size: 12.5px; }
+    .mk-legend { color: var(--peach); font-weight: 700; font-size: 11.5px; margin-bottom: 2px; }
+    .mk-input { background: var(--code); border: 1px solid #4b426b; padding: 5px 9px; border-radius: 6px; font-size: 12px; color: #9c95b8; margin-top: 4px; }
+
+    /* =========================================================
+       GAME 2: HONEYBEE FLEXBOX
+       ========================================================= */
+    .bee-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 700px) { .bee-split { grid-template-columns: 1fr; } }
+
+    .css-box {
+      width: 100%;
+      min-height: 92px;
+      border: 2px solid #5a4d86;
+      border-radius: 10px;
+      background: #241d38;
+      color: #fff;
+      font: 14px/1.6 var(--mono);
+      padding: 10px 12px;
+      resize: vertical;
+      outline: none;
+    }
+    .css-box:focus { border-color: var(--peach); }
+
+    .meadow {
+      background: radial-gradient(circle at 80% 20%, rgba(138, 99, 232, .25), transparent 60%), #17141f;
+      border: 1px solid var(--cl);
+      border-radius: 14px;
+      min-height: 280px;
+      position: relative;
+      overflow: hidden;
+    }
+    .meadow-layer {
+      position: absolute;
+      inset: 16px;
+      display: flex;
+      pointer-events: none;
+    }
+    .slot {
+      width: 58px;
+      height: 58px;
+      margin: 4px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .flower-ring {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(242, 162, 114, .14);
+      border: 2px dashed var(--peach);
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+    }
+    .bee-unit {
+      position: relative;
+      font-size: 30px;
+      animation: floatBee 2s ease-in-out infinite;
+    }
+    .bee-num {
+      position: absolute;
+      bottom: -3px;
+      right: -5px;
+      width: 17px;
+      height: 17px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font: 700 10px var(--mono);
+      display: grid;
+      place-items: center;
+      border: 1px solid #fff;
+    }
+    @keyframes floatBee {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    /* =========================================================
+       GAME 3: JS SYNTAX RUNNER
+       ========================================================= */
+    .js-choices {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 600px) { .js-choices { grid-template-columns: 1fr; } }
+
+    .js-choice {
+      background: #1b1826;
+      border: 1px solid var(--cl);
+      border-radius: 12px;
+      padding: 14px 16px;
+      text-align: left;
+      color: var(--ct);
+      font: 13.5px/1.5 var(--mono);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: transform .15s, border-color .15s, background .15s;
+    }
+    .js-choice:hover { border-color: var(--peach); background: #241f35; transform: translateY(-2px); }
+    .js-key {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      background: rgba(138, 99, 232, .28);
+      color: var(--peach);
+      font-weight: 700;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+
+    /* =========================================================
+       GAME 4: CODE BLOCKS ADVENTURE
+       ========================================================= */
+    .block-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .block-item {
+      background: var(--code);
+      border: 1px solid var(--cl);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--ct);
+      font: 13.5px var(--mono);
+      cursor: grab;
+      transition: border-color .16s, background .16s;
+    }
+    .block-item:hover { border-color: var(--accent); background: #1e192b; }
+    .block-item.right-line { border-color: var(--ok); background: rgba(31, 157, 99, .16); }
+    .block-code { display: flex; align-items: center; gap: 10px; overflow-x: auto; }
+    .block-idx { color: #8e85b0; font-size: 12px; user-select: none; }
+    .block-btns { display: flex; gap: 6px; flex-shrink: 0; }
+    .step-btn {
+      width: 30px;
+      height: 28px;
+      border-radius: 7px;
+      border: 1px solid var(--cl);
+      background: rgba(255, 255, 255, .07);
+      color: #fff;
+      font-size: 13px;
+      display: grid;
+      place-items: center;
+    }
+    .step-btn:hover:not(:disabled) { background: var(--accent); border-color: var(--accent); }
+    .step-btn:disabled { opacity: .3; cursor: not-allowed; }
+
+    /* =========================================================
+       GAME 5: CODE MATCH QUEST
+       ========================================================= */
+    .quest-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      gap: 16px;
+    }
+    @media (max-width: 640px) { .quest-grid { grid-template-columns: 1fr; } }
+
+    .quest-col { display: flex; flex-direction: column; gap: 10px; }
+    .quest-label {
+      font: 700 11.5px var(--mono);
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      color: #9c95b8;
+    }
+    .q-tile {
+      background: #1b1826;
+      border: 1px solid var(--cl);
+      border-radius: 12px;
+      padding: 13px 15px;
+      text-align: left;
+      color: var(--ct);
+      font: 14px/1.5 var(--sans);
+      transition: border-color .16s, background .16s;
+    }
+    .q-tile.term { font-family: var(--mono); font-weight: 700; color: var(--peach); }
+    .q-tile:hover:not(.done) { border-color: var(--accent); background: #231f32; }
+    .q-tile.sel { border-color: var(--peach); background: rgba(242, 162, 114, .18); box-shadow: 0 0 0 2px rgba(242, 162, 114, .25); }
+    .q-tile.done { border-color: rgba(79, 214, 153, .45); background: rgba(31, 157, 99, .15); color: #8cf2c2; opacity: .68; cursor: default; }
+
+    /* Summary Card */
+    .summary-card {
+      background:
+        radial-gradient(420px 220px at 85% 0, rgba(138, 99, 232, .35), transparent 70%),
+        #1b1826;
+      border: 1px solid var(--cl);
+      border-radius: 20px;
+      padding: 32px 24px;
+      text-align: center;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+    .summary-metrics {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 6px 0;
+    }
+    .m-box {
+      background: var(--code);
+      border: 1px solid var(--cl);
+      border-radius: 12px;
+      padding: 12px 18px;
+      min-width: 116px;
+    }
+    .m-box span { display: block; font-size: 12px; color: #9c95b8; margin-bottom: 4px; }
+    .m-box strong { font: 700 20px var(--mono); color: var(--peach); }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    @media (max-width: 820px) {
+      header { padding: 8px; }
+      .nb { height: 54px; }
+      .chip b, .tabs b { display: none; }
+      .tabs a, .tabs button { padding: 0 11px; font-size: 13px; }
+      main { padding: 16px 14px 90px; }
+      .hd { padding: 22px 18px; border-radius: 20px; }
+    }
+    @media (max-width: 520px) {
+      .wm { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Cozy Arcade Characters & Drifting Code Sparkles
+       To use custom images later, set data-sprite-src="your-image.png" on any .float-sprite -->
+  <div class="ambient-stage" aria-hidden="true">
+    <div class="float-sprite edge-only sp-cat" data-sprite-src="">
+      <span class="sprite-badge sprite-fallback">🐱</span>
+      <img class="custom-sprite-img" alt="" />
+    </div>
+    <div class="float-sprite edge-only sp-bee" data-sprite-src="">
+      <span class="sprite-badge sprite-fallback">🐝</span>
+      <img class="custom-sprite-img" alt="" />
+    </div>
+    <div class="float-sprite edge-only sp-ghost" data-sprite-src="">
+      <span class="sprite-badge sprite-fallback">👾</span>
+      <img class="custom-sprite-img" alt="" />
+    </div>
+    <div class="float-sprite edge-only sp-cartridge" data-sprite-src="">
+      <span class="sprite-badge sprite-fallback">🕹️</span>
+      <img class="custom-sprite-img" alt="" />
+    </div>
+
+    <span class="float-sprite sparkle-glyph sp-tok-1">&lt;/&gt;</span>
+    <span class="float-sprite sparkle-glyph sp-tok-2">{ }</span>
+    <span class="float-sprite sparkle-glyph sp-tok-3">✦</span>
+    <span class="float-sprite sparkle-glyph sp-tok-4">★</span>
+  </div>
+
+  <!-- Sticky Glassmorphic Header -->
+  <header>
+    <nav class="nb" aria-label="Primary">
+      <div class="l">
+        <a href="home.html" class="logo" title="Back to Home">
+          <span class="lb">&lt;/&gt;</span>
+          <span class="wm">Cozy<i>Arcade</i></span>
+        </a>
+      </div>
+
+      <div class="tabs" role="navigation">
+        <a href="#arcade-games" class="on"><span>🎮</span><b>Arcade</b></a>
+        <a href="#how-to-play"><span>📖</span><b>Guide</b></a>
+        <button type="button" onclick="resetArcadeProgress()"><span>↺</span><b>Reset</b></button>
+      </div>
+
+      <div class="r">
+        <div class="chip" id="xp-chip" style="--p:0" title="Arcade Mastery Progress">
+          <i></i>
+          <span><b id="mastery-pct">0%</b> &bull; <span id="total-xp">0 XP</span></span>
+        </div>
+        <button type="button" class="ib" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle color theme" title="Toggle Light / Dark Theme">
+          🌓
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top">
+    <!-- Hero Banner (.hd) -->
+    <section class="hd">
+      <div class="hero-mascot">
+        <span class="mascot-emoji">☕🎮</span>
+        <span>INSERT COIN &bull; NO LAG</span>
+      </div>
+      <div class="k">✦ Cozy Coding Arcade</div>
+      <h1>Small games. Big coding skills.</h1>
+      <p class="sub">
+        Settle into a warm violet-and-peach arcade booth and sharpen your HTML, CSS, and JavaScript instincts through five playable mini-games.
+      </p>
+      <div class="hero-stats">
+        <div class="hero-pill"><span>Cartridges:</span> <strong>5</strong></div>
+        <div class="hero-pill"><span>Total XP:</span> <strong id="hero-xp">0 XP</strong></div>
+        <div class="hero-pill"><span>Mastery:</span> <strong id="hero-mastery">0%</strong></div>
+      </div>
+    </section>
+
+    <!-- Game Selection Grid -->
+    <section id="arcade-games">
+      <div class="section-head">
+        <div>
+          <h2>Choose Your Game</h2>
+          <p>Pick a challenge below to practice syntax, layouts, and programming logic.</p>
+        </div>
+      </div>
+
+      <div class="game-grid">
+        <!-- 1. Tag Matcher -->
+        <article class="ex">
+          <div>
+            <div class="card-top">
+              <div class="game-icon">🏷️</div>
+              <span class="badge-pill" id="badge-tag">Best: 0</span>
+            </div>
+            <h3>Tag Matcher</h3>
+            <p>
+              Learn HTML tags by matching them with their correct purpose and live-rendered UI elements.
+            </p>
+          </div>
+          <button type="button" class="btn" onclick="openGame('tag')">Play Game →</button>
+        </article>
+
+        <!-- 2. Honeybee Flexbox -->
+        <article class="ex">
+          <div>
+            <div class="card-top">
+              <div class="game-icon">🐝</div>
+              <span class="badge-pill" id="badge-bee">Level 1/6</span>
+            </div>
+            <h3>Honeybee Flexbox</h3>
+            <p>
+              Practice CSS Flexbox and learn how to arrange website elements across 6 sunny meadow puzzles.
+            </p>
+          </div>
+          <button type="button" class="btn" onclick="openGame('bee')">Play Game →</button>
+        </article>
+
+        <!-- 3. JS Syntax Runner -->
+        <article class="ex">
+          <div>
+            <div class="card-top">
+              <div class="game-icon">⚡</div>
+              <span class="badge-pill" id="badge-js">Best: 0</span>
+            </div>
+            <h3>JS Syntax Runner</h3>
+            <p>
+              Test your JavaScript knowledge through rapid-fire coding challenges and output predictions.
+            </p>
+          </div>
+          <button type="button" class="btn" onclick="openGame('js')">Play Game →</button>
+        </article>
+
+        <!-- 4. Code Blocks Adventure -->
+        <article class="ex">
+          <div>
+            <div class="card-top">
+              <div class="game-icon">🧩</div>
+              <span class="badge-pill" id="badge-blocks">Stage 1/5</span>
+            </div>
+            <h3>Code Blocks Adventure</h3>
+            <p>
+              Arrange scrambled HTML, CSS, and JavaScript code blocks correctly using drag-and-drop or step buttons.
+            </p>
+          </div>
+          <button type="button" class="btn" onclick="openGame('blocks')">Play Game →</button>
+        </article>
+
+        <!-- 5. Code Match Quest -->
+        <article class="ex">
+          <div>
+            <div class="card-top">
+              <div class="game-icon">🔗</div>
+              <span class="badge-pill" id="badge-quest">Best: 0</span>
+            </div>
+            <h3>Code Match Quest</h3>
+            <p>
+              Match programming terms with their correct meanings and explanations across 3 glossary rounds.
+            </p>
+          </div>
+          <button type="button" class="btn" onclick="openGame('quest')">Play Game →</button>
+        </article>
+      </div>
+    </section>
+
+    <!-- Cozy Arcade Guide -->
+    <section class="guide-strip" id="how-to-play">
+      <h2>Arcade Booth Tips</h2>
+      <div class="guide-grid">
+        <div class="guide-tip">
+          <strong>🔥 Build Streak Combos</strong>
+          <span>Consecutive matches in Tag Matcher, JS Syntax Runner, and Code Match Quest boost your score and bonus timers.</span>
+        </div>
+        <div class="guide-tip">
+          <strong>🌸 Live Flexbox Meadow</strong>
+          <span>Type real CSS alignment rules in Honeybee Flexbox and watch numbered bees glide to matching blossoms.</span>
+        </div>
+        <div class="guide-tip">
+          <strong>💾 Saved Automatically</strong>
+          <span>Your high scores, unlocked stages, XP, and light/dark theme stay saved locally in your browser.</span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 Cozy Coding Arcade &bull; Keep Learning!</p>
+  </footer>
+
+  <!-- Full-Screen Arcade Workspace Modal (.md) -->
+  <div class="md" id="arcade-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="mt">
+      <div class="l">
+        <span class="lb" style="width:30px;height:30px;font-size:12px;">&lt;/&gt;</span>
+        <span class="modal-title" id="modal-title">Cozy Coding Arcade</span>
+      </div>
+      <div class="r">
+        <button type="button" class="btn g" onclick="closeGame()">← Back to Arcade</button>
+      </div>
+    </div>
+
+    <div class="hud-bar" id="modal-hud"></div>
+
+    <div class="track" id="timer-track">
+      <div class="fill" id="timer-fill"></div>
+    </div>
+
+    <div class="md-body">
+      <div class="md-inner" id="modal-content"></div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================
+       CUSTOM SPRITE IMAGE HOOKS (Swap when user provides images)
+       ========================================================= */
+    function initCustomSprites() {
+      document.querySelectorAll('.float-sprite[data-sprite-src]').forEach(el => {
+        const src = (el.getAttribute('data-sprite-src') || '').trim();
+        const img = el.querySelector('img.custom-sprite-img');
+        if (!src || !img) return;
+        img.onload = () => el.classList.add('has-custom-img');
+        img.onerror = () => el.classList.remove('has-custom-img');
+        img.src = src;
+      });
+    }
+    initCustomSprites();
+
+    /* =========================================================
+       THEME MANAGEMENT (Light / Dark / System)
+       ========================================================= */
+    const savedTheme = localStorage.getItem('cca_theme');
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+
+    function toggleTheme() {
+      const root = document.documentElement;
+      const current = root.getAttribute('data-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      let next;
+      if (!current) {
+        next = prefersDark ? 'light' : 'dark';
+      } else {
+        next = current === 'dark' ? 'light' : 'dark';
+      }
+      root.setAttribute('data-theme', next);
+      localStorage.setItem('cca_theme', next);
+    }
+
+    /* =========================================================
+       PERSISTENT ARCADE PROGRESS & MASTERY RING
+       ========================================================= */
+    const progress = {
+      tagBest: parseInt(localStorage.getItem('cca_tag_best') || '0', 10),
+      beeLevel: parseInt(localStorage.getItem('cca_bee_lvl') || '1', 10),
+      jsBest: parseInt(localStorage.getItem('cca_js_best') || '0', 10),
+      blocksStage: parseInt(localStorage.getItem('cca_blocks_stg') || '1', 10),
+      questBest: parseInt(localStorage.getItem('cca_quest_best') || '0', 10)
+    };
+
+    function syncProgressUI() {
+      localStorage.setItem('cca_tag_best', String(progress.tagBest));
+      localStorage.setItem('cca_bee_lvl', String(progress.beeLevel));
+      localStorage.setItem('cca_js_best', String(progress.jsBest));
+      localStorage.setItem('cca_blocks_stg', String(progress.blocksStage));
+      localStorage.setItem('cca_quest_best', String(progress.questBest));
+
+      const tagEl = document.getElementById('badge-tag');
+      tagEl.textContent = `Best: ${progress.tagBest}`;
+      tagEl.classList.toggle('mastered', progress.tagBest >= 500);
+
+      const beeEl = document.getElementById('badge-bee');
+      const beeDone = progress.beeLevel > 6;
+      beeEl.textContent = beeDone ? 'Mastered 6/6' : `Level ${progress.beeLevel}/6`;
+      beeEl.classList.toggle('mastered', beeDone);
+
+      const jsEl = document.getElementById('badge-js');
+      jsEl.textContent = `Best: ${progress.jsBest}`;
+      jsEl.classList.toggle('mastered', progress.jsBest >= 600);
+
+      const blocksEl = document.getElementById('badge-blocks');
+      const blocksDone = progress.blocksStage > 5;
+      blocksEl.textContent = blocksDone ? 'Mastered 5/5' : `Stage ${progress.blocksStage}/5`;
+      blocksEl.classList.toggle('mastered', blocksDone);
+
+      const questEl = document.getElementById('badge-quest');
+      questEl.textContent = `Best: ${progress.questBest}`;
+      questEl.classList.toggle('mastered', progress.questBest >= 1500);
+
+      const totalXp =
+        progress.tagBest +
+        progress.jsBest +
+        progress.questBest +
+        (Math.min(progress.beeLevel - 1, 6) * 200) +
+        (Math.min(progress.blocksStage - 1, 5) * 240);
+
+      const p1 = Math.min(20, Math.round((progress.tagBest / 600) * 20));
+      const p2 = Math.min(20, Math.round((Math.min(progress.beeLevel - 1, 6) / 6) * 20));
+      const p3 = Math.min(20, Math.round((progress.jsBest / 600) * 20));
+      const p4 = Math.min(20, Math.round((Math.min(progress.blocksStage - 1, 5) / 5) * 20));
+      const p5 = Math.min(20, Math.round((progress.questBest / 1800) * 20));
+      const pct = Math.min(100, p1 + p2 + p3 + p4 + p5);
+
+      document.getElementById('xp-chip').style.setProperty('--p', pct);
+      document.getElementById('mastery-pct').textContent = `${pct}%`;
+      document.getElementById('total-xp').textContent = `${totalXp} XP`;
+      document.getElementById('hero-xp').textContent = `${totalXp} XP`;
+      document.getElementById('hero-mastery').textContent = `${pct}%`;
+    }
+    syncProgressUI();
+
+    function resetArcadeProgress() {
+      progress.tagBest = 0;
+      progress.beeLevel = 1;
+      progress.jsBest = 0;
+      progress.blocksStage = 1;
+      progress.questBest = 0;
+      syncProgressUI();
+    }
+
+    /* =========================================================
+       MODAL CONTROLLER & UTILITIES
+       ========================================================= */
+    let activeGame = null;
+    let activeTimer = null;
+
+    const modalEl = document.getElementById('arcade-modal');
+    const modalTitleEl = document.getElementById('modal-title');
+    const hudEl = document.getElementById('modal-hud');
+    const timerTrackEl = document.getElementById('timer-track');
+    const timerFillEl = document.getElementById('timer-fill');
+    const contentEl = document.getElementById('modal-content');
+
+    function openGame(key) {
+      clearInterval(activeTimer);
+      activeGame = key;
+      modalEl.classList.add('open');
+      document.body.classList.add('ns');
+
+      if (key === 'tag') startTagMatcher();
+      if (key === 'bee') startHoneybeeFlexbox();
+      if (key === 'js') startJsRunner();
+      if (key === 'blocks') startCodeBlocks();
+      if (key === 'quest') startCodeMatchQuest();
+    }
+
+    function closeGame() {
+      clearInterval(activeTimer);
+      activeGame = null;
+      modalEl.classList.remove('open');
+      document.body.classList.remove('ns');
+      syncProgressUI();
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && activeGame) closeGame();
+    });
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function esc(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    /* =========================================================
+       1. TAG MATCHER (45s HTML Tag & Purpose Arcade)
+       ========================================================= */
+
+
+const lessonId = new URLSearchParams(window.location.search).get('lesson');
+
+const HTML_HOME_ITEMS = [
+  {
+    tag: '<html>',
+    desc: 'The root element that contains the entire HTML document',
+    ui: `<div class="mk-code">Document Root</div>`
+  },
+  {
+    tag: '<head>',
+    desc: 'Contains page information and metadata',
+    ui: `<div class="mk-field"><div class="mk-legend">Page Information</div><div>Metadata and title</div></div>`
+  },
+  {
+    tag: '<title>',
+    desc: 'Sets the title shown in the browser tab',
+    ui: `<div class="mk-input">My First Web Page</div>`
+  },
+  {
+    tag: '<body>',
+    desc: 'Contains the visible content of a web page',
+    ui: `<div class="mk-details"><strong>Visible Page</strong><div style="font-size:12px;color:#9c95b8;margin-top:3px;">Headings and paragraphs</div></div>`
+  },
+  {
+    tag: '<h1>',
+    desc: 'Defines the main heading of a page',
+    ui: `<div style="font-size:20px;font-weight:800;color:#fff;">Welcome!</div>`
+  },
+  {
+    tag: '<p>',
+    desc: 'Defines a paragraph of text',
+    ui: `<div style="font-size:13px;color:#e8e3fa;">This is a paragraph.</div>`
+  }
+];
+
+
+const HTML_ELEMENTS_ITEMS = [
+  {
+    tag: '<h2>',
+    desc: 'Defines a second-level heading',
+    ui: `<div style="font-size:18px;font-weight:800;color:#fff;">Nested Elements Example</div>`
+  },
+  {
+    tag: '<p>',
+    desc: 'Defines a paragraph that can contain other HTML elements',
+    ui: `<div style="font-size:13px;color:#e8e3fa;">This paragraph contains other elements.</div>`
+  },
+  {
+    tag: '<strong>',
+    desc: 'Marks important text, usually displayed in bold',
+    ui: `<div style="font-size:13px;color:#fff;"><strong>Bold text</strong></div>`
+  },
+  {
+    tag: '<em>',
+    desc: 'Adds emphasis to text, usually displayed in italic',
+    ui: `<div style="font-size:13px;color:#e8e3fa;"><em>Italic text</em></div>`
+  }
+];
+
+const HTML_ATTRIBUTES_ITEMS = [
+  {
+    tag: 'style',
+    desc: 'HTML attribute used to add inline CSS to an element',
+    ui: `<div class="mk-code">style="color:#8a63e8"</div>`
+  },
+  {
+    tag: 'color',
+    desc: 'CSS property that changes the text color',
+    ui: `<div style="color:#8a63e8;font-weight:800;">Purple Text</div>`
+  },
+  {
+    tag: 'background',
+    desc: 'CSS property that sets an element background',
+    ui: `<div style="background:#fff1e8;padding:8px;color:#2a1608;">Peach Background</div>`
+  },
+  {
+    tag: 'padding',
+    desc: 'CSS property that adds space inside an element',
+    ui: `<div style="background:#fff1e8;padding:12px;color:#2a1608;">Padded Content</div>`
+  }
+];
+
+
+const HTML_LINKS_ITEMS = [
+  {
+    tag: '<a>',
+    desc: 'Defines a hyperlink that lets users navigate to another page',
+    ui: `<div style="font-size:13px;color:#8a63e8;text-decoration:underline;">Visit Example.com</div>`
+  },
+  {
+    tag: 'href',
+    desc: 'Specifies the destination URL of a hyperlink',
+    ui: `<div class="mk-code">href="https://example.com"</div>`
+  },
+  {
+    tag: 'target',
+    desc: 'Specifies where the linked page should open',
+    ui: `<div class="mk-code">target="_blank"</div>`
+  },
+  {
+    tag: 'Link text',
+    desc: 'The clickable text displayed inside an anchor element',
+    ui: `<div style="font-size:13px;color:#8a63e8;text-decoration:underline;">Click Here</div>`
+  }
+];
+
+const HTML_IMAGES_ITEMS = [
+  {
+    tag: '<img>',
+    desc: 'Embeds an image into an HTML page',
+    ui: `<div style="font-size:42px;">🖼️</div>`
+  },
+  {
+    tag: 'src',
+    desc: 'Specifies the file path or source of the image',
+    ui: `<div class="mk-code">src="cat.jpg"</div>`
+  },
+  {
+    tag: 'alt',
+    desc: 'Provides alternative text describing an image',
+    ui: `<div class="mk-code">alt="A sleeping cat"</div>`
+  }
+];
+
+
+
+const HTML_FORMS_ITEMS = [
+  {
+    tag: '<form>',
+    desc: 'Creates a form for collecting user input',
+    ui: `<div class="mk-code">&lt;form&gt; ... &lt;/form&gt;</div>`
+  },
+  {
+    tag: '<input>',
+    desc: 'Creates an input field such as a text box or checkbox',
+    ui: `<div style="background:#fff;padding:10px;border-radius:6px;color:#333;">Your name: [ text input ]</div>`
+  },
+  {
+    tag: 'type',
+    desc: 'Specifies what kind of input field or button is created',
+    ui: `<div class="mk-code">type="text"</div>`
+  },
+  {
+    tag: '<label>',
+    desc: 'Provides a descriptive label for a form input',
+    ui: `<div style="color:#fff;padding:8px;">Name: [ input field ]</div>`
+  },
+  {
+    tag: '<button>',
+    desc: 'Creates a clickable button inside a form or page',
+    ui: `<div style="background:#f2a272;color:#24150d;padding:10px 20px;border-radius:8px;text-align:center;font-weight:800;">Send</div>`
+  }
+];
+
+// HTML HEADINGS LESSON
+const HTML_HEADINGS_ITEMS = [
+  {
+    tag: '<h1>',
+    desc: 'Defines the main and most important heading of a page',
+    ui: `<div style="font-size:22px;font-weight:800;color:#fff;">Main Heading</div>`
+  },
+  {
+    tag: '<h2>',
+    desc: 'Defines a second-level heading or subheading',
+    ui: `<div style="font-size:19px;font-weight:800;color:#fff;">Section Heading</div>`
+  },
+  {
+    tag: '<h3>',
+    desc: 'Defines a third-level heading under an h2 heading',
+    ui: `<div style="font-size:17px;font-weight:800;color:#fff;">Subsection Heading</div>`
+  },
+  {
+    tag: '<h4>',
+    desc: 'Defines a fourth-level heading',
+    ui: `<div style="font-size:15px;font-weight:800;color:#fff;">Fourth-Level Heading</div>`
+  },
+  {
+    tag: '<h5>',
+    desc: 'Defines a fifth-level heading',
+    ui: `<div style="font-size:14px;font-weight:800;color:#fff;">Fifth-Level Heading</div>`
+  },
+  {
+    tag: '<h6>',
+    desc: 'Defines the sixth-level and lowest-level heading',
+    ui: `<div style="font-size:13px;font-weight:800;color:#fff;">Sixth-Level Heading</div>`
+  }
+];
+
+// HTML LISTS LESSON
+const HTML_LISTS_ITEMS = [
+  {
+    tag: '<ul>',
+    desc: 'Creates an unordered list with bullet points',
+    ui: `<div style="color:#fff;">• Apple<br>• Banana<br>• Mango</div>`
+  },
+  {
+    tag: '<ol>',
+    desc: 'Creates an ordered list with numbered items',
+    ui: `<div style="color:#fff;">1. First<br>2. Second<br>3. Third</div>`
+  },
+  {
+    tag: '<li>',
+    desc: 'Defines an individual item inside a list',
+    ui: `<div style="color:#fff;">• List Item</div>`
+  }
+];
+
+const TAG_ITEMS = lessonId === 'html-elements'
+  ? HTML_ELEMENTS_ITEMS
+  : lessonId === 'html-attributes'
+    ? HTML_ATTRIBUTES_ITEMS
+    : lessonId === 'html-links'
+      ? HTML_LINKS_ITEMS
+      : lessonId === 'html-headings'
+        ? HTML_HEADINGS_ITEMS
+        : lessonId === 'html-images'
+          ? HTML_IMAGES_ITEMS
+          : lessonId === 'html-lists'
+            ? HTML_LISTS_ITEMS
+            : lessonId === 'html-forms'
+              ? HTML_FORMS_ITEMS
+              : HTML_HOME_ITEMS;
+
+let tagState = {};
+
+    function startTagMatcher() {
+      modalTitleEl.textContent = '🏷️ Tag Matcher — HTML Purpose Arcade';
+      timerTrackEl.style.display = 'block';
+      tagState = { score: 0, streak: 0, bestStreak: 0, time: 45, maxTime: 45, target: null, locked: false };
+      renderTagHud();
+      nextTagRound(
+      lessonId === 'html-attributes'
+        ? 'Match the CSS property or HTML attribute to its correct purpose!'
+        : lessonId === 'html-images'
+          ? 'Match the image tag or attribute to its correct purpose!'
+          : 'Match the HTML tag below to its rendered element and semantic purpose!',
+      ''
+      );
+
+      activeTimer = setInterval(() => {
+        tagState.time--;
+        renderTagHud();
+        if (tagState.time <= 0) {
+          clearInterval(activeTimer);
+          endTagMatcher();
+        }
+      }, 1000);
+    }
+
+    function renderTagHud() {
+      const pct = Math.max(0, (tagState.time / tagState.maxTime) * 100);
+      timerFillEl.style.width = `${pct}%`;
+      hudEl.innerHTML = `
+        <div class="hud-group">
+          <span>Score: <span class="hud-val ok">${tagState.score}</span></span>
+          <span>Streak: <span class="hud-val">${tagState.streak}x</span></span>
+        </div>
+        <div class="hud-group">
+          <span>Time Left: <span class="hud-val ${tagState.time <= 10 ? 'bad' : ''}">${tagState.time}s</span></span>
+        </div>
+      `;
+    }
+
+    function nextTagRound(msg, tone) {
+      tagState.locked = false;
+      const pool = shuffle(TAG_ITEMS);
+      const target = pool[0];
+      const options = shuffle(pool.slice(0, 4));
+      tagState.target = target;
+
+      contentEl.innerHTML = `
+        <div class="fb-banner ${tone}">${msg}</div>
+        <div class="tag-hero">
+          <div class="lbl">
+          ${lessonId === 'html-attributes'
+        ? 'Identify This Attribute or CSS Property'
+        : lessonId === 'html-images'
+          ? 'Identify This Image Tag or Attribute'
+          : 'Identify This HTML Tag'}
+        </div>
+          <div class="tag-pill-code">${esc(target.tag)}</div>
+        </div>
+        <div class="tag-grid">
+          ${options.map((opt, idx) => `
+            <button type="button" class="tag-choice" id="tag-btn-${idx}" onclick="pickTag(${idx}, '${opt.tag.replace(/'/g, "\\'")}')">
+              ${opt.ui}
+              <div class="tag-desc">${opt.desc}</div>
+            </button>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function pickTag(idx, chosen) {
+      if (tagState.locked) return;
+      tagState.locked = true;
+      const el = document.getElementById(`tag-btn-${idx}`);
+
+      if (chosen === tagState.target.tag) {
+        tagState.streak++;
+        if (tagState.streak > tagState.bestStreak) tagState.bestStreak = tagState.streak;
+        const pts = 100 + Math.min(tagState.streak * 20, 100);
+        tagState.score += pts;
+        const bonus = tagState.streak % 3 === 0;
+        if (bonus) tagState.time = Math.min(tagState.maxTime, tagState.time + 3);
+        el.classList.add('ok-flash');
+        renderTagHud();
+        setTimeout(() => {
+          if (activeGame === 'tag') {
+            nextTagRound(`Spot on! +${pts} pts${bonus ? ' (+3s streak bonus!)' : ''}`, 'ok');
+          }
+        }, 320);
+      } else {
+        tagState.streak = 0;
+        tagState.time = Math.max(1, tagState.time - 2);
+        el.classList.add('bad-flash');
+        renderTagHud();
+        setTimeout(() => {
+          if (activeGame === 'tag') {
+            nextTagRound(`Not quite! That wasn't ${esc(tagState.target.tag)} (-2s)`, 'bad');
+          }
+        }, 420);
+      }
+    }
+
+    function endTagMatcher() {
+      const record = tagState.score > progress.tagBest;
+      if (record) progress.tagBest = tagState.score;
+
+      contentEl.innerHTML = `
+        <div class="summary-card">
+          <div style="font-size:44px;">${record ? '🏆' : '🏷️'}</div>
+          <h2>${record ? 'New Tag Matcher Record!' : 'Time’s Up!'}</h2>
+          <p style="color:#cfcae6;">Great eye for semantic HTML! Keep practicing to build instant element recall.</p>
+          <div class="summary-metrics">
+            <div class="m-box"><span>Final Score</span><strong>${tagState.score}</strong></div>
+            <div class="m-box"><span>Best Streak</span><strong>${tagState.bestStreak}x</strong></div>
+            <div class="m-box"><span>High Score</span><strong>${progress.tagBest}</strong></div>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+            <button type="button" class="btn" onclick="startTagMatcher()">Play Again</button>
+            <button type="button" class="btn g" onclick="closeGame()">Back to Arcade</button>
+          </div>
+        </div>
+      `;
+    }
+
+    /* =========================================================
+       2. HONEYBEE FLEXBOX (6 Live CSS Flexbox Meadow Puzzles)
+       ========================================================= */
+    const BEE_LEVELS = [
+      {
+        name: 'Level 1: Sunny Right Meadow',
+        prompt: 'Guide the honeybee to the right flower using <code>justify-content</code>.',
+        hint: 'justify-content: flex-end;',
+        targetCss: 'justify-content: flex-end;',
+        bees: ['1']
+      },
+      {
+        name: 'Level 2: Center Blossom',
+        prompt: 'Align both honeybees in the horizontal center of the meadow.',
+        hint: 'justify-content: center;',
+        targetCss: 'justify-content: center;',
+        bees: ['1', '2']
+      },
+      {
+        name: 'Level 3: Equal Nectar Spacing',
+        prompt: 'Distribute the three honeybees with equal space around each flower.',
+        hint: 'justify-content: space-around;',
+        targetCss: 'justify-content: space-around;',
+        bees: ['1', '2', '3']
+      },
+      {
+        name: 'Level 4: Bottom Garden Patch',
+        prompt: 'Move the honeybee to the bottom-center flower using both main and cross axis alignment.',
+        hint: 'justify-content: center; align-items: flex-end;',
+        targetCss: 'justify-content: center; align-items: flex-end;',
+        bees: ['1']
+      },
+      {
+        name: 'Level 5: Vertical Hive Column',
+        prompt: 'Stack the honeybees vertically in the exact center of the meadow.',
+        hint: 'flex-direction: column; justify-content: center; align-items: center;',
+        targetCss: 'flex-direction: column; justify-content: center; align-items: center;',
+        bees: ['1', '2']
+      },
+      {
+        name: 'Level 6: Reverse Flight Path',
+        prompt: 'Reverse the row direction so Bee 1 lands on the right flower and Bee 2 on its left!',
+        hint: 'flex-direction: row-reverse;',
+        targetCss: 'flex-direction: row-reverse;',
+        bees: ['1', '2']
+      }
+    ];
+
+    let beeState = { idx: 0, solved: false };
+
+    function startHoneybeeFlexbox() {
+      modalTitleEl.textContent = '🐝 Honeybee Flexbox — Garden Layout Lab';
+      timerTrackEl.style.display = 'none';
+      loadBeeStage(0);
+    }
+
+    function loadBeeStage(idx) {
+      beeState.idx = idx;
+      beeState.solved = false;
+      const lvl = BEE_LEVELS[idx];
+
+      hudEl.innerHTML = `
+        <div class="hud-group">
+          <span>Progress: <span class="hud-val">${idx + 1} / ${BEE_LEVELS.length}</span></span>
+          <span>${lvl.name}</span>
+        </div>
+        <div class="hud-group">
+          <button type="button" class="btn g" style="min-height:32px;padding:4px 12px;font-size:12.5px;" onclick="showBeeHint()">💡 Hint</button>
+        </div>
+      `;
+
+      contentEl.innerHTML = `
+        <div class="fb-banner" id="bee-msg">${lvl.prompt}</div>
+
+        <div class="bee-split">
+          <div class="cw" style="display:flex;flex-direction:column;justify-content:space-between;">
+            <div>
+              <div class="cb"><i></i><i></i><i></i><span>meadow.css</span></div>
+              <div class="cp" style="white-space:normal;">
+                <div><span class="tk-tag">#meadow</span> <span class="tk-punc">{</span></div>
+                <div style="padding-left:16px;"><span class="tk-attr">display</span><span class="tk-punc">:</span> <span class="tk-str">flex</span><span class="tk-punc">;</span></div>
+                <div style="padding-left:16px;margin:8px 0;">
+                  <textarea id="bee-css" class="css-box" spellcheck="false" placeholder="/* Type Flexbox rules here... */" oninput="evaluateBeeCss()"></textarea>
+                </div>
+                <div><span class="tk-punc">}</span></div>
+              </div>
+            </div>
+            <div style="padding:0 16px 16px;">
+              <button type="button" class="btn" style="width:100%;" onclick="advanceBeeStage()">Next Level →</button>
+            </div>
+          </div>
+
+          <div class="meadow">
+            <div class="meadow-layer" style="${lvl.targetCss}">
+              ${lvl.bees.map((_, i) => `
+                <div class="slot" id="flw-${i}"><div class="flower-ring">🌼</div></div>
+              `).join('')}
+            </div>
+
+            <div class="meadow-layer" id="bee-flex-layer">
+              ${lvl.bees.map((num, i) => `
+                <div class="slot" id="bee-${i}">
+                  <div class="bee-unit">🐝<span class="bee-num">${num}</span></div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.getElementById('bee-css').focus();
+      evaluateBeeCss();
+    }
+
+    function showBeeHint() {
+      const lvl = BEE_LEVELS[beeState.idx];
+      const msg = document.getElementById('bee-msg');
+      msg.className = 'fb-banner peach';
+      msg.innerHTML = `💡 <strong>Hint:</strong> <code>${lvl.hint}</code>`;
+    }
+
+    function evaluateBeeCss() {
+      const box = document.getElementById('bee-css');
+      const layer = document.getElementById('bee-flex-layer');
+      const msg = document.getElementById('bee-msg');
+      const lvl = BEE_LEVELS[beeState.idx];
+      if (!box || !layer) return;
+
+      layer.setAttribute('style', box.value);
+
+      requestAnimationFrame(() => {
+        let aligned = true;
+        for (let i = 0; i < lvl.bees.length; i++) {
+          const f = document.getElementById(`flw-${i}`).getBoundingClientRect();
+          const b = document.getElementById(`bee-${i}`).getBoundingClientRect();
+          if (Math.abs(f.left - b.left) > 8 || Math.abs(f.top - b.top) > 8) {
+            aligned = false;
+            break;
+          }
+        }
+        beeState.solved = aligned;
+        if (aligned) {
+          msg.className = 'fb-banner ok';
+          msg.innerHTML = `🍯 <strong>Sweet!</strong> All honeybees are aligned on their matching flowers! Click Next Level.`;
+          const nextLvl = beeState.idx + 2;
+          if (nextLvl > progress.beeLevel) progress.beeLevel = nextLvl;
+        } else {
+          msg.className = 'fb-banner';
+          msg.innerHTML = lvl.prompt;
+        }
+      });
+    }
+
+    function advanceBeeStage() {
+      if (!beeState.solved) {
+        const msg = document.getElementById('bee-msg');
+        msg.className = 'fb-banner bad';
+        msg.innerHTML = `Not aligned yet! Match every numbered bee with its corresponding flower first.`;
+        return;
+      }
+      if (beeState.idx + 1 < BEE_LEVELS.length) {
+        loadBeeStage(beeState.idx + 1);
+      } else {
+        contentEl.innerHTML = `
+          <div class="summary-card">
+            <div style="font-size:44px;">🐝🍯</div>
+            <h2>Honeybee Meadow Mastered!</h2>
+            <p style="color:#cfcae6;">You solved all 6 CSS Flexbox layout challenges with clean alignment rules.</p>
+            <div class="summary-metrics">
+              <div class="m-box"><span>Levels Cleared</span><strong>6 / 6</strong></div>
+              <div class="m-box"><span>Flexbox Rank</span><strong>Master</strong></div>
+            </div>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+              <button type="button" class="btn" onclick="startHoneybeeFlexbox()">Play Again</button>
+              <button type="button" class="btn g" onclick="closeGame()">Back to Arcade</button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    /* =========================================================
+       3. JS SYNTAX RUNNER (60s JavaScript Sprint)
+       ========================================================= */
+
+const JS_CHALLENGES = [
+  {
+    q: 'Which property handles a button click in this example?',
+    file: 'click.js',
+    code: `<span class="tk-attr">const</span> button = document.getElementById(<span class="tk-str">'myButton'</span>);
+button.<span class="tk-attr">onclick</span> = function() {
+  console.log(<span class="tk-str">'Button clicked!'</span>);
+};`,
+    opts: ['onclick', 'onchange', 'onload', 'onsubmit'],
+    ans: 'onclick',
+    why: 'The onclick property runs a function when the user clicks an element.'
+  },
+  {
+    q: 'Which keyword allows the score variable to be reassigned?',
+    file: 'variables.js',
+    code: `<span class="tk-attr">let</span> score = <span class="tk-tag">10</span>;
+score = <span class="tk-tag">20</span>;
+console.log(score);`,
+    opts: ['let', 'const', 'function', 'return'],
+    ans: 'let',
+    why: 'let declares a variable whose value can be reassigned.'
+  },
+  {
+    q: 'Which keyword is used to declare this function?',
+    file: 'functions.js',
+    code: `<span class="tk-attr">function</span> greet(name) {
+  <span class="tk-attr">return</span> <span class="tk-str">'Hello '</span> + name;
+}
+console.log(greet(<span class="tk-str">'Alex'</span>));`,
+    opts: ['function', 'const', 'if', 'return'],
+    ans: 'function',
+    why: 'The function keyword declares a function. The return keyword sends a value back.'
+  },
+  {
+    q: 'Which keyword starts the condition in this example?',
+    file: 'conditions.js',
+    code: `<span class="tk-attr">let</span> score = <span class="tk-tag">85</span>;
+
+<span class="tk-attr">if</span> (score >= <span class="tk-tag">75</span>) {
+  console.log(<span class="tk-str">'Passed'</span>);
+} <span class="tk-attr">else</span> {
+  console.log(<span class="tk-str">'Failed'</span>);
+}`,
+    opts: ['if', 'for', 'let', 'else'],
+    ans: 'if',
+    why: 'The if keyword checks whether a condition is true before running its code block.'
+  },
+  {
+    q: 'Which loop repeats the code using a counter?',
+    file: 'loops.js',
+    code: `<span class="tk-attr">for</span> (let i = <span class="tk-tag">0</span>; i &lt; <span class="tk-tag">3</span>; i++) {
+  console.log(i);
+}`,
+    opts: ['for', 'if', 'while', 'function'],
+    ans: 'for',
+    why: 'A for loop repeats a block of code while its condition remains true.'
+  },
+  {
+    q: 'Which array method adds a new item to the end?',
+    file: 'arrays.js',
+    code: `<span class="tk-attr">const</span> fruits = [<span class="tk-str">'apple'</span>, <span class="tk-str">'banana'</span>];
+fruits.<span class="tk-attr">push</span>(<span class="tk-str">'kiwi'</span>);
+console.log(fruits);`,
+    opts: ['push()', 'pop()', 'join()', 'length'],
+    ans: 'push()',
+    why: 'The push() method adds a new item to the end of an array.'
+  },
+  {
+    q: 'Which method finds an HTML element using its ID?',
+    file: 'dom.js',
+    code: `<span class="tk-attr">const</span> title = document.<span class="tk-attr">getElementById</span>(<span class="tk-str">'pageTitle'</span>);
+title.textContent = <span class="tk-str">'Welcome!'</span>;`,
+    opts: ['getElementById()', 'addEventListener()', 'push()', 'querySelectorAll()'],
+    ans: 'getElementById()',
+    why: 'document.getElementById() finds an HTML element by its ID.'
+  },
+  {
+    q: 'Which method attaches a click event listener to a button?',
+    file: 'events.js',
+    code: `<span class="tk-attr">const</span> button = document.getElementById(<span class="tk-str">'myButton'</span>);
+
+button.<span class="tk-attr">addEventListener</span>(<span class="tk-str">'click'</span>, function() {
+  console.log(<span class="tk-str">'Clicked!'</span>);
+});`,
+    opts: ['addEventListener()', 'getElementById()', 'push()', 'join()'],
+    ans: 'addEventListener()',
+    why: 'addEventListener() listens for an event, such as a button click, and runs a function when it happens.'
+  }
+];
+
+
+    let jsState = {};
+
+    function startJsRunner() {
+      modalTitleEl.textContent = '⚡ JS Syntax Runner — Coding Sprint';
+      timerTrackEl.style.display = 'block';
+      jsState = { score: 0, combo: 0, bestCombo: 0, time: 60, maxTime: 60, pool: shuffle(JS_CHALLENGES), idx: 0, locked: false };
+      renderJsHud();
+      renderJsQuestion('Inspect the snippet and select the exact output or fix!', '');
+
+      activeTimer = setInterval(() => {
+        jsState.time--;
+        renderJsHud();
+        if (jsState.time <= 0) {
+          clearInterval(activeTimer);
+          endJsRunner();
+        }
+      }, 1000);
+    }
+
+    function renderJsHud() {
+      const pct = Math.max(0, (jsState.time / jsState.maxTime) * 100);
+      timerFillEl.style.width = `${pct}%`;
+      hudEl.innerHTML = `
+        <div class="hud-group">
+          <span>Score: <span class="hud-val ok">${jsState.score}</span></span>
+          <span>Combo: <span class="hud-val">${jsState.combo}x</span></span>
+        </div>
+        <div class="hud-group">
+          <span>Time Left: <span class="hud-val ${jsState.time <= 12 ? 'bad' : ''}">${jsState.time}s</span></span>
+        </div>
+      `;
+    }
+
+    function renderJsQuestion(msg, tone) {
+      jsState.locked = false;
+      if (jsState.idx >= jsState.pool.length) {
+        jsState.pool = shuffle(JS_CHALLENGES);
+        jsState.idx = 0;
+      }
+      const item = jsState.pool[jsState.idx];
+      const opts = shuffle(item.opts);
+      const letters = ['A', 'B', 'C', 'D'];
+
+      contentEl.innerHTML = `
+        <div class="fb-banner ${tone}">${msg}</div>
+        <div style="font:700 17px var(--display);color:#fff;">${item.q}</div>
+        <div class="cw">
+          <div class="cb"><i></i><i></i><i></i><span>${item.file}</span></div>
+          <pre class="cp"><code>${item.code}</code></pre>
+        </div>
+        <div class="js-choices">
+          ${opts.map((opt, i) => `
+            <button type="button" class="js-choice" id="js-opt-${i}" onclick="pickJsOption(${i}, ${JSON.stringify(opt).replace(/"/g, '&quot;')})">
+              <span class="js-key">${letters[i]}</span>
+              <span>${esc(opt)}</span>
+            </button>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function pickJsOption(i, chosen) {
+      if (jsState.locked) return;
+      jsState.locked = true;
+      const item = jsState.pool[jsState.idx];
+      const btn = document.getElementById(`js-opt-${i}`);
+
+      if (chosen === item.ans) {
+        jsState.combo++;
+        if (jsState.combo > jsState.bestCombo) jsState.bestCombo = jsState.combo;
+        const pts = 150 + Math.min(jsState.combo * 25, 125);
+        jsState.score += pts;
+        jsState.time = Math.min(jsState.maxTime, jsState.time + 2);
+        btn.style.borderColor = 'var(--ok)';
+        btn.style.background = 'rgba(31, 157, 99, .22)';
+        renderJsHud();
+        setTimeout(() => {
+          if (activeGame === 'js') {
+            jsState.idx++;
+            renderJsQuestion(`Correct (+${pts} pts, +2s)! ${item.why}`, 'ok');
+          }
+        }, 700);
+      } else {
+        jsState.combo = 0;
+        jsState.time = Math.max(1, jsState.time - 4);
+        btn.style.borderColor = 'var(--bad)';
+        btn.style.background = 'rgba(214, 65, 79, .22)';
+        renderJsHud();
+        setTimeout(() => {
+          if (activeGame === 'js') {
+            jsState.idx++;
+            renderJsQuestion(`Not quite (-4s). Answer: ${item.ans} — ${item.why}`, 'bad');
+          }
+        }, 1050);
+      }
+    }
+
+    function endJsRunner() {
+      const record = jsState.score > progress.jsBest;
+      if (record) progress.jsBest = jsState.score;
+
+      contentEl.innerHTML = `
+        <div class="summary-card">
+          <div style="font-size:44px;">${record ? '⚡🏆' : '⚡'}</div>
+          <h2>${record ? 'New JS Runner Record!' : 'Sprint Finished!'}</h2>
+          <p style="color:#cfcae6;">Sharp JavaScript instincts! Keep mastering closures, array transforms, and async timing.</p>
+          <div class="summary-metrics">
+            <div class="m-box"><span>Final Score</span><strong>${jsState.score}</strong></div>
+            <div class="m-box"><span>Best Combo</span><strong>${jsState.bestCombo}x</strong></div>
+            <div class="m-box"><span>High Score</span><strong>${progress.jsBest}</strong></div>
+          </div>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+            <button type="button" class="btn" onclick="startJsRunner()">Run Again</button>
+            <button type="button" class="btn g" onclick="closeGame()">Back to Arcade</button>
+          </div>
+        </div>
+      `;
+    }
+
+    /* =========================================================
+       4. CODE BLOCKS ADVENTURE (5 HTML/CSS/JS Ordering Stages)
+       ========================================================= */
+
+const BLOCK_STAGES = [
+  {
+    lang: 'HTML',
+    file: 'heading.html',
+    name: 'Stage 1: HTML Heading Structure',
+    goal: 'Arrange the heading and paragraph elements in the correct HTML structure.',
+    lines: [
+    '<div>',
+    '  <h2>My First Website</h2>',
+    '  <p>Welcome to my webpage!</p>',
+    '</div>'
+  ]
+  },
+  
+  {
+    lang: 'CSS',
+    file: 'flexbox.css',
+    name: 'Stage 2: Flexbox Alignment',
+    goal: 'Arrange the CSS properties inside the Flexbox rule.',
+    lines: [
+      '.container {',
+      '  display: flex;',
+      '  justify-content: center;',
+      '}'
+    ]
+  },
+
+  {
+    lang: 'JavaScript',
+    file: 'arrays.js',
+    name: 'Stage 3: Arrays and Loops',
+    goal: 'Arrange the array and for loop code to display each fruit.',
+    lines: [
+      'const fruits = ["Apple", "Banana", "Mango"];',
+      'for (let i = 0; i < fruits.length; i++) {',
+      '  console.log(fruits[i]);',
+      '}'
+    ]
+  },
+ 
+  {
+    lang: 'JavaScript',
+    file: 'function.js',
+    name: 'Stage 4: Function and Condition',
+    goal: 'Arrange the function and condition to check the score.',
+    lines: [
+      'function checkScore(score) {',
+      '  if (score >= 75) return "Passed";',
+      '  return "Failed";',
+      '}'
+    ]
+  },
+
+  {
+    lang: 'DOM JS',
+    file: 'events.js',
+    name: 'Stage 5: DOM Click Event',
+    goal: 'Arrange the code to select a button and respond when it is clicked.',
+    lines: [
+      'const btn = document.getElementById("myButton");',
+      'btn.addEventListener("click", function() {',
+      '  btn.textContent = "You clicked me!";',
+      '});'
+    ]
+  }
+];
+
+
+    let blocksState = { idx: 0, order: [], dragIdx: null };
+
+    function startCodeBlocks() {
+      modalTitleEl.textContent = '🧩 Code Blocks Adventure — Syntax Builder';
+      timerTrackEl.style.display = 'none';
+      loadBlockStage(0);
+    }
+
+    function loadBlockStage(idx) {
+      blocksState.idx = idx;
+      const stg = BLOCK_STAGES[idx];
+      let mixed = shuffle(stg.lines);
+      if (mixed.join('\n') === stg.lines.join('\n')) {
+        mixed = [...stg.lines].reverse();
+      }
+      blocksState.order = mixed;
+      renderBlockStage('Drag blocks or use ↑ / ↓ buttons to arrange the code in valid order!', '', false);
+    }
+
+    function renderBlockStage(msg, tone, showValid) {
+      const stg = BLOCK_STAGES[blocksState.idx];
+
+      hudEl.innerHTML = `
+        <div class="hud-group">
+          <span>Stage: <span class="hud-val">${blocksState.idx + 1} / ${BLOCK_STAGES.length}</span></span>
+          <span>Language: <span class="hud-val ok">${stg.lang}</span></span>
+        </div>
+        <div class="hud-group"><span>${stg.name}</span></div>
+      `;
+
+      contentEl.innerHTML = `
+        <div class="fb-banner ${tone}">${msg}</div>
+        <div style="color:#cfcae6;font-size:14.5px;">${stg.goal}</div>
+
+        <div class="cw">
+          <div class="cb"><i></i><i></i><i></i><span>${stg.file}</span></div>
+          <div style="padding:14px;">
+            <div class="block-stack">
+              ${blocksState.order.map((line, i) => {
+                const isRight = showValid && line === stg.lines[i];
+                return `
+                  <div class="block-item ${isRight ? 'right-line' : ''}"
+                       draggable="true"
+                       ondragstart="dragBlockStart(${i})"
+                       ondragover="event.preventDefault()"
+                       ondrop="dropBlock(${i})">
+                    <div class="block-code">
+                      <span class="block-idx">${i + 1}</span>
+                      <pre style="margin:0;font-family:var(--mono);"><code>${esc(line)}</code></pre>
+                    </div>
+                    <div class="block-btns">
+                      <button type="button" class="step-btn" title="Move Up" ${i === 0 ? 'disabled' : ''} onclick="shiftBlock(${i}, -1)">↑</button>
+                      <button type="button" class="step-btn" title="Move Down" ${i === blocksState.order.length - 1 ? 'disabled' : ''} onclick="shiftBlock(${i}, 1)">↓</button>
+                    </div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+
+        <button type="button" class="btn" onclick="checkBlockOrder()">Check Code Order ✓</button>
+      `;
+    }
+
+    function shiftBlock(i, dir) {
+      const target = i + dir;
+      if (target < 0 || target >= blocksState.order.length) return;
+      [blocksState.order[i], blocksState.order[target]] = [blocksState.order[target], blocksState.order[i]];
+      renderBlockStage('Keep arranging the lines into proper structure.', '', false);
+    }
+
+    function dragBlockStart(i) { blocksState.dragIdx = i; }
+    function dropBlock(targetIdx) {
+      const from = blocksState.dragIdx;
+      if (from === null || from === targetIdx) return;
+      const [moved] = blocksState.order.splice(from, 1);
+      blocksState.order.splice(targetIdx, 0, moved);
+      blocksState.dragIdx = null;
+      renderBlockStage('Block moved! Check your code order when ready.', '', false);
+    }
+
+    function checkBlockOrder() {
+      const stg = BLOCK_STAGES[blocksState.idx];
+      let okCount = 0;
+      for (let i = 0; i < stg.lines.length; i++) {
+        if (blocksState.order[i] === stg.lines[i]) okCount++;
+      }
+
+      if (okCount === stg.lines.length) {
+        const nextStg = blocksState.idx + 2;
+        if (nextStg > progress.blocksStage) progress.blocksStage = nextStg;
+
+        if (blocksState.idx + 1 < BLOCK_STAGES.length) {
+          renderBlockStage(`🎉 Clean syntax! Stage ${blocksState.idx + 1} solved! Loading next stage...`, 'ok', true);
+          setTimeout(() => {
+            if (activeGame === 'blocks') loadBlockStage(blocksState.idx + 1);
+          }, 900);
+        } else {
+          contentEl.innerHTML = `
+            <div class="summary-card">
+              <div style="font-size:44px;">🧩✨</div>
+              <h2>Code Blocks Adventure Complete!</h2>
+              <p style="color:#cfcae6;">Every HTML, CSS, and JavaScript block snapped into valid working order!</p>
+              <div class="summary-metrics">
+                <div class="m-box"><span>Stages Cleared</span><strong>5 / 5</strong></div>
+                <div class="m-box"><span>Accuracy</span><strong>100%</strong></div>
+              </div>
+              <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+                <button type="button" class="btn" onclick="startCodeBlocks()">Replay Adventure</button>
+                <button type="button" class="btn g" onclick="closeGame()">Back to Arcade</button>
+              </div>
+            </div>
+          `;
+        }
+      } else {
+        renderBlockStage(`${okCount} of ${stg.lines.length} lines are in the right spot (highlighted in green). Adjust the rest!`, 'bad', true);
+      }
+    }
+
+    /* =========================================================
+       5. CODE MATCH QUEST (3-Round Term-to-Meaning Quest)
+       ========================================================= */
+
+const QUEST_BANK = [
+  // HTML CONCEPTS
+  {
+    term: 'HTML Heading',
+    def: 'HTML tags from h1 to h6 used to create headings with different levels of importance.'
+  },
+  {
+    term: 'HTML Image',
+    def: 'The img tag displays an image, while src specifies its location.'
+  },
+  {
+    term: 'HTML List',
+    def: 'The ul and ol tags create lists, while li defines each list item.'
+  },
+  {
+    term: 'HTML Form',
+    def: 'A form collects user input using elements such as input, label, and button.'
+  },
+
+  // CSS CONCEPTS
+  {
+    term: 'CSS Selector',
+    def: 'A selector chooses which HTML elements will receive a particular style.'
+  },
+  {
+    term: 'CSS Colors',
+    def: 'CSS colors can use color names, hexadecimal codes, rgb(), or hsl() values.'
+  },
+  {
+    term: 'CSS Box Model',
+    def: 'The four layers of an element are content, padding, border, and margin.'
+  },
+  {
+    term: 'CSS Flexbox',
+    def: 'A layout method using display: flex to arrange, align, and space items.'
+  },
+
+  // JAVASCRIPT CONCEPTS
+  {
+    term: 'JavaScript Variable',
+    def: 'A named storage location for values, declared using let or const.'
+  },
+  {
+    term: 'JavaScript Function',
+    def: 'A reusable block of code that can be called whenever it is needed.'
+  },
+  {
+    term: 'JavaScript Condition',
+    def: 'An if or else statement lets a program make decisions based on a condition.'
+  },
+  {
+    term: 'JavaScript Array',
+    def: 'A collection that stores multiple values in one variable and can use methods like push().'
+  }
+];
+
+
+    let questState = {};
+
+    function startCodeMatchQuest() {
+      modalTitleEl.textContent = '🔗 Code Match Quest — Dev Glossary Matcher';
+      timerTrackEl.style.display = 'none';
+      const deck = shuffle(QUEST_BANK);
+      questState = {
+        rounds: [deck.slice(0, 4), deck.slice(4, 8), deck.slice(8, 12)],
+        round: 0,
+        score: 0,
+        combo: 0,
+        selTerm: null,
+        selDef: null,
+        matched: new Set()
+      };
+      setupQuestRound('Select a programming term on the left, then click its matching explanation on the right!', '');
+    }
+
+    function setupQuestRound(msg, tone) {
+      const pairs = questState.rounds[questState.round];
+      questState.selTerm = null;
+      questState.selDef = null;
+      questState.matched = new Set();
+      questState.terms = shuffle(pairs.map(p => p.term));
+      questState.defs = shuffle(pairs.map(p => ({ term: p.term, def: p.def })));
+      renderQuest(msg, tone);
+    }
+
+    function renderQuest(msg, tone) {
+      hudEl.innerHTML = `
+        <div class="hud-group">
+          <span>Round: <span class="hud-val">${questState.round + 1} / ${questState.rounds.length}</span></span>
+          <span>Score: <span class="hud-val ok">${questState.score}</span></span>
+        </div>
+        <div class="hud-group">
+          <span>Combo: <span class="hud-val">${questState.combo}x</span></span>
+        </div>
+      `;
+
+      contentEl.innerHTML = `
+        <div class="fb-banner ${tone}">${msg}</div>
+        <div class="quest-grid">
+          <div class="quest-col">
+            <div class="quest-label">Programming Terms</div>
+            ${questState.terms.map(t => {
+              const done = questState.matched.has(t);
+              const sel = questState.selTerm === t;
+              return `
+                <button type="button" class="q-tile term ${done ? 'done' : ''} ${sel ? 'sel' : ''}"
+                        ${done ? 'disabled' : ''} onclick="chooseQuestTerm('${t.replace(/'/g, "\\'")}')">
+                  ${done ? '✓ ' : ''}${esc(t)}
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          <div class="quest-col">
+            <div class="quest-label">Meanings &amp; Explanations</div>
+            ${questState.defs.map(d => {
+              const done = questState.matched.has(d.term);
+              const sel = questState.selDef === d.term;
+              return `
+                <button type="button" class="q-tile ${done ? 'done' : ''} ${sel ? 'sel' : ''}"
+                        ${done ? 'disabled' : ''} onclick="chooseQuestDef('${d.term.replace(/'/g, "\\'")}')">
+                  ${esc(d.def)}
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function chooseQuestTerm(t) {
+      if (questState.matched.has(t)) return;
+      questState.selTerm = t;
+      if (questState.selDef) evaluateQuestMatch();
+      else renderQuest(`Selected "${t}". Now pick its matching explanation!`, '');
+    }
+
+    function chooseQuestDef(tKey) {
+      if (questState.matched.has(tKey)) return;
+      questState.selDef = tKey;
+      if (questState.selTerm) evaluateQuestMatch();
+      else renderQuest('Explanation selected! Now pick its matching term on the left.', '');
+    }
+
+    function evaluateQuestMatch() {
+      const t = questState.selTerm;
+      const d = questState.selDef;
+      questState.selTerm = null;
+      questState.selDef = null;
+
+      if (t === d) {
+        questState.matched.add(t);
+        questState.combo++;
+        const pts = 120 + (questState.combo * 20);
+        questState.score += pts;
+
+        if (questState.matched.size === questState.rounds[questState.round].length) {
+          if (questState.round + 1 < questState.rounds.length) {
+            renderQuest(`✨ Round ${questState.round + 1} cleared (+${pts} pts)! Loading next round...`, 'ok');
+            setTimeout(() => {
+              if (activeGame === 'quest') {
+                questState.round++;
+                setupQuestRound('New terms unlocked! Match every pair to complete the quest.', '');
+              }
+            }, 800);
+          } else {
+            const record = questState.score > progress.questBest;
+            if (record) progress.questBest = questState.score;
+
+            contentEl.innerHTML = `
+              <div class="summary-card">
+                <div style="font-size:44px;">${record ? '🔗🏆' : '🔗'}</div>
+                <h2>${record ? 'New Quest High Score!' : 'Code Match Quest Complete!'}</h2>
+                <p style="color:#cfcae6;">You paired all 12 core web development concepts with their accurate explanations!</p>
+                <div class="summary-metrics">
+                  <div class="m-box"><span>Quest Score</span><strong>${questState.score}</strong></div>
+                  <div class="m-box"><span>Final Combo</span><strong>${questState.combo}x</strong></div>
+                  <div class="m-box"><span>Best Score</span><strong>${progress.questBest}</strong></div>
+                </div>
+                <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+                  <button type="button" class="btn" onclick="startCodeMatchQuest()">Play Again</button>
+                  <button type="button" class="btn g" onclick="closeGame()">Back to Arcade</button>
+                </div>
+              </div>
+            `;
+          }
+        } else {
+          renderQuest(`Matched "${t}"! +${pts} pts (${questState.combo}x combo)`, 'ok');
+        }
+      } else {
+        questState.combo = 0;
+        renderQuest(`Mismatch! "${t}" doesn't match that explanation—try again!`, 'bad');
+      }
+    }
+  </script>
+</body>
+</html>

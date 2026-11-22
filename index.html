@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HowtoCode: Tutorials</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header><div class="nb">
+<div class="l"><button class="ib" id="mtg" aria-label="Toggle lessons">&#9776;</button><a class="logo" href="home.html" title="Back to home"><span class="lb">&lt;/&gt;</span><span class="wm">Howto<i>Code</i></span></a></div>
+<nav class="tabs" aria-label="Tutorials"><a data-k="html" href="#html-home"><b>&#127760;</b>HTML</a><a data-k="css" href="#css-home"><b>&#127912;</b>CSS</a><a data-k="js" href="#js-home"><b>&#9889;</b>JS</a></nav>
+<div class="r"><div class="chip" id="ch" title="Lessons completed"><i></i><span id="chn">0/6</span></div><button class="ib" id="th" aria-label="Switch theme">&#9680;</button></div>
+</div></header>
+<div id="pg"></div>
+<div class="ov" id="ov"></div>
+<div class="wrap">
+<aside id="sb"><div class="prog"><p id="pt"></p><div class="track"><div class="fill" id="pf"></div></div></div><div class="tl" id="ll"></div></aside>
+<main id="mc"></main>
+</div>
+
+<!-- Floating button: opens the playground page -->
+<a class="fab" id="fab" href="playground.html" target="_blank" rel="noopener noreferrer" title="Open code playground" aria-label="Open code playground">&lt;/&gt;</a>
+
+<!-- "Try it yourself" popup -->
+<div class="md" id="md">
+<div class="mt"><div class="l"><button class="btn" id="run">Run &#10095;</button><span class="hint">Edit the code and press Run.</span></div><button class="btn g" id="cl">Close &#10005;</button></div>
+<div class="ws"><div class="pn" id="ep"><div class="ph">Source code</div><textarea id="ci" spellcheck="false" autocapitalize="off" autocorrect="off" aria-label="Code editor"></textarea></div>
+<div class="pn" id="pp"><div class="ph"><span>Live result</span><span><button class="vb on" id="vd">&#128187; Desktop</button><button class="vb" id="vm">&#128241; Mobile</button><button class="vb" id="vf">&#10530; Full</button></span></div><div class="fw"><iframe id="lo" title="Live result" sandbox="allow-scripts allow-modals"></iframe></div></div></div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
