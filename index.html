@@ -107,6 +107,7 @@ footer{background:var(--bar);color:#9c95b8;text-align:center;padding:30px 20px;f
     display: flex;
 }
 
+
 .developers-toggle {
     margin: 25px 0;
     padding: 12px 22px;
@@ -117,13 +118,25 @@ footer{background:var(--bar);color:#9c95b8;text-align:center;padding:30px 20px;f
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
-    transition: 0.2s;
+    animation: developerPulse 2s ease-in-out infinite;
+    transition: background 0.3s;
 }
 
 .developers-toggle:hover {
-    transform: translateY(-2px);
-    opacity: 0.85;
+    background: var(--at);
 }
+
+@keyframes developerPulse {
+    0%, 100% {
+        transform: translateY(0);
+        box-shadow: 0 0 0 rgba(255, 200, 87, 0);
+    }
+    50% {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 18px rgba(255, 200, 87, 0.3);
+    }
+}
+
 
 #developersArrow {
     display: inline-block;
