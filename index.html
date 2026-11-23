@@ -93,208 +93,38 @@ footer{background:var(--bar);color:#9c95b8;text-align:center;padding:30px 20px;f
 .fab:hover{transform:translateY(-3px) scale(1.05)}
 #up{position:fixed;right:30px;bottom:calc(92px + env(safe-area-inset-bottom,0px));width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--panel);box-shadow:var(--sh);opacity:0;pointer-events:none;transition:opacity .25s;z-index:1000}
 #up.show{opacity:1;pointer-events:auto}
-
 .about {text-align: center;padding: 70px 20px;}.about p {max-width: 700px;margin: 0 auto 30px;line-height: 1.8;}
 .about h3 {margin: 35px 0 20px;}
-
-
-.team-members {
-    display: none;
-    width: 100%;
-    overflow: hidden;
-    margin-top: 25px;
-}
-
-.team-members.show {
-    display: block;
-}
-
-.team-track {
-    display: flex;
-    align-items: center;
-    width: max-content;
-    gap: 55px;
-    animation: developerTrain 20s linear infinite;
-}
-
-.team-track span {
-    white-space: nowrap;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--peach);
-}
-
-@keyframes developerTrain {
-    from {
-        transform: translateX(0);
-    }
-    to {
-        transform: translateX(-50%);
-    }
-}
-
-
-
-
-.developers-toggle {
-    margin: 25px 0;
-    padding: 12px 22px;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    background: var(--bar);
-    color: white;
-    font-size: 16px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.developers-toggle:hover {
-    background: var(--at);
-}
-
-#developersArrow {
-    display: inline-block;
-    margin-left: 8px;
-    transition: transform 0.2s;
-}
-
-#developersArrow.rotated {
-    transform: rotate(180deg);
-}
+.team-members {display: none;width: 100%;overflow: hidden;margin-top: 25px;}
+.team-members.show {display: block;}
+.team-track {display: flex;align-items: center;width: max-content;gap: 55px;animation: developerTrain 20s linear infinite;}
+.team-track span {white-space: nowrap;font-size: 18px;font-weight: 700;color: var(--peach);}
+@keyframes developerTrain {from {transform: translateX(0);}to {transform: translateX(-50%);}}
+.developers-toggle {margin: 25px 0;padding: 12px 22px;border: 1px solid var(--line); border-radius: 12px;background: var(--bar);color: white;font-size: 16px;font-weight: 700;cursor: pointer;transition: background 0.3s;}
+.developers-toggle:hover {background: var(--at);}
+#developersArrow {display: inline-block;margin-left: 8px;transition: transform 0.2s;}
+#developersArrow.rotated {transform: rotate(180deg);}
 .site-footer {padding: 25px 6% 12px;background: #111827;color: white;}
-
-.footer-content {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    align-items: start;
-    justify-items: center;
-    text-align: center;
-    gap: 20px;
-}
-
-.footer-content > div {
-    width: 100%;
-}
-
-.footer-content h3 {
-    margin: 0 0 18px;
-}
-
-.footer-content p {
-    margin: 6px 0;
-    color: #cbd5e1;
-    line-height: 1.4;
-    font-size: 14px;
-}
-
-@media (max-width: 600px) {
-    .footer-content {
-        grid-template-columns: 1fr;
-        gap: 25px;
-    }
-}
-
+.footer-content {display: grid;grid-template-columns: repeat(3, 1fr);align-items: start;justify-items: center;text-align: center;gap: 20px;}
+.footer-content > div { width: 100%;}
+.footer-content h3 {margin: 0 0 18px;}
+.footer-content p {margin: 6px 0;color: #cbd5e1;line-height: 1.4;font-size: 14px;}
+@media (max-width: 600px) {.footer-content {grid-template-columns: 1fr;gap: 25px;}}
 .footer-bottom {text-align: center;border-top: 1px solid #374151;margin-top: 18px;padding-top: 12px; font-size: 13px;}
 .footer-bottom span {color: #ef4444;}
-
-
-
-/* RATING POPUP OVERLAY */
-.rating-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    background: rgba(10, 8, 25, 0.78);
-    backdrop-filter: blur(5px);
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-
-/* POPUP BOX */
-.rating-popup {
-    position: relative;
-    width: 100%;
-    max-width: 450px;
-    padding: 35px 25px;
-    text-align: center;
-    border-radius: 22px;
-    background: var(--bar);
-    color: white;
-    border: 1px solid var(--line);
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-    animation: ratingAppear 0.3s ease;
-}
-
-.rating-popup h2 {
-    margin-bottom: 12px;
-}
-
-.rating-popup p {
-    margin: 12px 0;
-    color: #cbd5e1;
-}
-
-/* CLOSE BUTTON */
-.rating-close {
-    position: absolute;
-    top: 12px;
-    right: 16px;
-    border: none;
-    background: transparent;
-    color: white;
-    font-size: 28px;
-    cursor: pointer;
-}
-
-/* STARS */
-.star-rating {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin: 22px 0;
-}
-
-.star-rating button {
-    border: none;
-    background: transparent;
-    color: #777;
-    font-size: 38px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.star-rating button.active {
-    color: #ffc857;
-}
-
-.star-rating button:hover {
-    transform: scale(1.2);
-}
-
-@keyframes ratingAppear {
-    from {
-        opacity: 0;
-        transform: translateY(15px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
+.rating-overlay {display: none;position: fixed;inset: 0;z-index: 9999;background: rgba(10, 8, 25, 0.78);backdrop-filter: blur(5px);justify-content: center;align-items: center;padding: 20px;}
+.rating-popup {position: relative;width: 100%;max-width: 450px;padding: 35px 25px;text-align: center;border-radius: 22px;background: var(--bar);color: white;border: 1px solid var(--line);box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);animation: ratingAppear 0.3s ease;}
+.rating-popup h2 {margin-bottom: 12px;}
+.rating-popup p {margin: 12px 0;color: #cbd5e1;}
+.rating-close {position: absolute;top: 12px;right: 16px;border: none;background: transparent;color: white;font-size: 28px;cursor: pointer;}
+.star-rating {display: flex;justify-content: center;gap: 8px;margin: 22px 0;}
+.star-rating button {border: none;background: transparent;color: #777;font-size: 38px;cursor: pointer;transition: 0.2s;}
+.star-rating button.active {color: #ffc857;}
+.star-rating button:hover {transform: scale(1.2);}
+@keyframes ratingAppear {from {opacity: 0;transform: translateY(15px) scale(0.95);}to {opacity: 1;transform: translateY(0) scale(1);}}
 @media (max-width: 480px) {
-    .rating-popup {
-        padding: 30px 18px;
-    }
-
-    .star-rating button {
-        font-size: 32px;
-    }
-}
-
+.rating-popup {padding: 30px 18px;}
+.star-rating button {font-size: 32px;}}
 @media(max-width:820px){header{padding:8px}.nb{height:54px}.chip{display:none}.tabs a{padding:0 10px;font-size:13px}.tabs b{display:none}#pg{top:calc(70px + env(safe-area-inset-top,0px))}.hero{padding-top:130px}.fab{width:52px;height:52px;right:16px}#up{right:22px;bottom:calc(84px + env(safe-area-inset-bottom,0px))}.tl{padding-left:46px}.tl .nd{left:-46px;width:34px;height:34px}.tl::before{left:15px}}
 @media(max-width:520px){.wm{display:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}.typed .cur{animation:none}}
@@ -330,59 +160,21 @@ footer{background:var(--bar);color:#9c95b8;text-align:center;padding:30px 20px;f
 <section class="sec" id="faq"><h2>Frequently asked questions</h2><p class="sub">Short answers for new learners.</p><div class="faq" id="fq"></div></section>
 <section class="about" id="about"><h2 style="font:800 clamp(28px,5vw,40px) var(--display);letter-spacing:-.03em;margin-bottom:12px">About Us</h2>
 <p>HowtoCode makes learning to build websites feel like play.Every lesson has a live editor, every topic ends with a quick test,and everything is free.</p>
-<button class="developers-toggle" id="developersToggle" type="button">
-    Meet Our Developers <span id="developersArrow">▼</span>
-</button>
-
-
-
-<div class="team-members" id="teamMembers">
-    <div class="team-track">
-        <span>•Cornelio Sebastian Lozano•</span>
-        <span>•Euneko Nathan Tibudan•</span>
-        <span>•Anne Bayadas•</span>
-
-        <!-- Repeated names for seamless animation -->
-        <span>•Cornelio Sebastian Lozano•</span>
-        <span>•Euneko Nathan Tibudan•</span>
-        <span>•Anne Bayadas•</span>
-    </div>
-</div>
-
-
-</section>
-
-
-<div class="rating-overlay" id="ratingOverlay">
-    <div class="rating-popup" role="dialog" aria-modal="true" aria-labelledby="ratingTitle">
-
-        <button class="rating-close" id="closeRating" type="button" aria-label="Close rating popup">
-            &times;
-        </button>
-
-        <h2 id="ratingTitle">Rate HowtoCode</h2>
-
-        <p>How was your learning experience?</p>
-
-        <div class="star-rating">
-            <button type="button" data-rating="1" aria-label="1 star">★</button>
-            <button type="button" data-rating="2" aria-label="2 stars">★</button>
-            <button type="button" data-rating="3" aria-label="3 stars">★</button>
-            <button type="button" data-rating="4" aria-label="4 stars">★</button>
-            <button type="button" data-rating="5" aria-label="5 stars">★</button>
-        </div>
-
-        <p id="rating-message">Select your rating from 1 to 5 stars.</p>
-
-    </div>
-</div>
-    
+<button class="developers-toggle" id="developersToggle" type="button">Meet Our Developers <span id="developersArrow">▼</span></button>
+<div class="team-members" id="teamMembers"><div class="team-track"><span>•Cornelio Sebastian Lozano•</span><span>•Euneko Nathan Tibudan•</span><span>•Anne Bayadas•</span>
+<span>•Cornelio Sebastian Lozano•</span><span>•Euneko Nathan Tibudan•</span><span>•Anne Bayadas•</span></div></div>
+</section><div class="rating-overlay" id="ratingOverlay"><div class="rating-popup" role="dialog" aria-modal="true" aria-labelledby="ratingTitle">
+<button class="rating-close" id="closeRating" type="button" aria-label="Close rating popup">&times;</button>
+<h2 id="ratingTitle">Rate HowtoCode</h2><p>How was your learning experience?</p><div class="star-rating">
+<button type="button" data-rating="1" aria-label="1 star">★</button><button type="button" data-rating="2" aria-label="2 stars">★</button>
+<button type="button" data-rating="3" aria-label="3 stars">★</button><button type="button" data-rating="4" aria-label="4 stars">★</button><button type="button" data-rating="5" aria-label="5 stars">★</button></div>
+<p id="rating-message">Select your rating from 1 to 5 stars.</p></div></div>   
 <footer class="site-footer">
 <div class="footer-content">
 <div><h3>HowtoCode</h3><p>Learn. Practice. Create.</p></div>
-<div><h3>Contact Us</h3><p>Address: [Your official project address]</p>
-<p>Gmail: [Your project Gmail]</p><p>Phone: [Your project contact number]</p></div>
-<div><h3>Follow Us</h3><p>Facebook: [Your project Facebook page]</p></div></div>
+<div><h3>Contact Us</h3><p>Address: Emilio Jacinto National High School (EJNHS), Daniel St., Pingkian Road, Pasong Tamo, Quezon City.</p>
+<p>Gmail: HowtoCode@gmail.com</p><p>Phone: 09913466120</p></div>
+<div><h3>Follow Us</h3><p>Facebook: https://www.facebook.com/ugwuabooga</p></div></div>
 <div class="footer-bottom"><p>Made with <span>&#9829;</span> by HowtoCode &copy; 2026</p></div></footer>
 <button type="button" id="up" aria-label="Back to top">&#8593;</button>
 <a class="fab" href="playground.html" target="_blank" rel="noopener" title="Open code playground" aria-label="Open code playground">&lt;/&gt;</a>
@@ -390,20 +182,16 @@ footer{background:var(--bar);color:#9c95b8;text-align:center;padding:30px 20px;f
 const $=s=>document.querySelector(s),PP="htc-path";
 const store=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 const load=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
-/* typed line */
 const lines=['<h1 class="title">Hello, world!</h1>','<p style="color:tomato">Style me</p>','<a href="https://example.com">Click here</a>'];
 const hl=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/(&lt;\/?)([a-z0-9]+)/g,'<span class="pn">$1</span><span class="tg">$2</span>').replace(/([\w-]+)=("[^"]*")/g,'<span class="at">$1</span>=<span class="sr">$2</span>');
 if(matchMedia("(prefers-reduced-motion:reduce)").matches)$("#ty").innerHTML=hl(lines[0]);
 else{let li=0,ci=0,del=0;(function t(){const s=lines[li];ci+=del?-1:1;$("#ty").innerHTML=hl(s.slice(0,ci));let w=del?25:55;
 if(!del&&ci===s.length){del=1;w=1500}else if(del&&ci===0){del=0;li=(li+1)%lines.length;w=400}setTimeout(t,w)})()}
-/* counters */
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(!e.isIntersecting)return;io.unobserve(e.target);const el=e.target,n=+el.dataset.n,t0=performance.now();
 (function f(t){const p=Math.min((t-t0)/1100,1);el.textContent=Math.round(n*(1-Math.pow(1-p,3)))+(p>=1?"+":"");if(p<1)requestAnimationFrame(f)})(t0)}),{threshold:.6});
 document.querySelectorAll("[data-n]").forEach(e=>io.observe(e));
-/* scroll */
 addEventListener("scroll",()=>{const h=document.documentElement,p=scrollY/(h.scrollHeight-innerHeight||1);$("#pg").style.width=p*100+"%";$("#up").classList.toggle("show",scrollY>500)},{passive:true});
 $("#up").onclick=()=>scrollTo({top:0,behavior:"smooth"});
-/* path */
 const S=[["Write your first HTML page","Headings, paragraphs and links."],["Style it with CSS","Colors, fonts and spacing."],["Build a responsive layout","Flexbox, Grid and media queries."],["Add a button with JavaScript","Variables, functions and click events."],["Play a coding game","Practice what you learned."],["Build a mini project","A to-do list or a small calculator."]];
 let dn=[];try{dn=JSON.parse(load(PP)||"[]")}catch(e){}
 function path(){$("#tl").innerHTML=S.map((s,i)=>`<li data-i="${i}" class="${dn[i]?"d":""}"><span class="nd">${dn[i]?"&#10003;":i+1}</span><b>${s[0]}</b><span>${s[1]}</span></li>`).join("");
@@ -411,7 +199,6 @@ const n=dn.filter(Boolean).length;$("#bf").style.width=n/S.length*100+"%";$("#bl
 $("#ch").style.setProperty("--p",n/S.length*100);$("#chn").textContent=n+"/"+S.length}
 $("#tl").onclick=e=>{const li=e.target.closest("li");if(!li)return;dn[+li.dataset.i]=!dn[+li.dataset.i];store(PP,JSON.stringify(dn));path()};
 $("#rs").onclick=()=>{dn=[];store(PP,"[]");path()};path();
-/* quiz */
 const Q=[["What does HTML stand for?",["HyperText Markup Language","High Tech Modern Language","Home Tool Markup Language"],0,"HTML is the markup language that structures web pages."],["Which language styles a web page?",["HTML","CSS","SQL"],1,"CSS controls colors, fonts and layout."],["Which tag creates a link?",["<link>","<a>","<href>"],1,"The <a> tag makes a link, and href holds its address."]];
 let qi=0,sc=0;
 function quiz(){const b=$("#qb");
@@ -420,87 +207,26 @@ const q=Q[qi];b.innerHTML=`<div class="qc">Question ${qi+1} of ${Q.length}</div>
 b.querySelectorAll(".opt").forEach(o=>o.onclick=()=>{const k=+o.dataset.i;b.querySelectorAll(".opt").forEach((x,i)=>{x.disabled=true;if(i===q[2])x.classList.add("right")});if(k===q[2])sc++;else o.classList.add("wrong");$("#wy").textContent=q[3];$("#qn").style.display="inline-flex"});
 $("#qn").onclick=()=>{qi++;quiz()}}
 quiz();
-/* faq */
 const F=[["Is HowtoCode free?","Yes. Every lesson, quiz and game is free to use."],["Do I need to install anything?","No. Everything runs in your browser, including the code playground."],["Where do I start?","Begin with the HTML tutorial, then move on to CSS and JavaScript."],["Is my progress saved?","Yes. Your path and playground code are saved in this browser."]];
 $("#fq").innerHTML=F.map(f=>`<div class="fi"><button type="button" class="fq" aria-expanded="false">${f[0]}</button><div class="fa"><p>${f[1]}</p></div></div>`).join("");
 $("#fq").onclick=e=>{const q=e.target.closest(".fq");if(!q)return;const it=q.parentNode,o=it.classList.toggle("open"),a=it.querySelector(".fa");q.setAttribute("aria-expanded",o);a.style.maxHeight=o?a.scrollHeight+"px":0};
-/* theme */
 $("#th").onclick=()=>{const r=document.documentElement;r.dataset.theme=getComputedStyle(r).colorScheme==="dark"?"light":"dark"};
-
-
-
-/* =================================
-   HOWTOCODE RATING POPUP
-================================= */
-
 const ratingOverlay = document.getElementById("ratingOverlay");
 const closeRating = document.getElementById("closeRating");
 const ratingMessage = document.getElementById("rating-message");
 const ratingStars = document.querySelectorAll(".star-rating button");
-
-let ratingTimer;
-let selectedRating = 0;
-let hasRated = false;
-
-function showRatingPopup() {
-    if (hasRated) return;
-    ratingOverlay.style.display = "flex";
-}
-
-function startRatingTimer() {
-    if (hasRated) return;
-
-    clearTimeout(ratingTimer);
-
-    ratingTimer = setTimeout(() => {
-        showRatingPopup();
-    }, 3 * 60 * 1000);
-}
-
-function hideRatingPopup() {
-    ratingOverlay.style.display = "none";
-    startRatingTimer();
-}
-
-// Initial 3-minute timer
-startRatingTimer();
-
-// Close button: show again after 3 minutes
-closeRating.addEventListener("click", hideRatingPopup);
-
-// Star selection
-ratingStars.forEach((star) => {
-    star.addEventListener("click", () => {
-        selectedRating = Number(star.dataset.rating);
-        hasRated = true;
-
-        ratingStars.forEach((item) => {
-            const value = Number(item.dataset.rating);
-            item.classList.toggle("active", value <= selectedRating);
-        });
-
-        ratingMessage.textContent =
-            `Thank you for rating HowtoCode ${selectedRating}/5 stars!`;
-
-        clearTimeout(ratingTimer);
-
-        setTimeout(() => {
-            ratingOverlay.style.display = "none";
-        }, 2000);
-    });
-});
-
-/* MEET OUR DEVELOPERS TOGGLE */
-
+let ratingTimer;let selectedRating = 0;let hasRated = false;function showRatingPopup() {
+if (hasRated) return;ratingOverlay.style.display = "flex";}function startRatingTimer() {
+if (hasRated) return;clearTimeout(ratingTimer);ratingTimer = setTimeout(() => {showRatingPopup();}, 3 * 60 * 1000);}
+function hideRatingPopup() {ratingOverlay.style.display = "none";startRatingTimer();}startRatingTimer();closeRating.addEventListener("click", hideRatingPopup);
+ratingStars.forEach((star) => {star.addEventListener("click", () => {selectedRating = Number(star.dataset.rating);hasRated = true;
+ratingStars.forEach((item) => {const value = Number(item.dataset.rating);item.classList.toggle("active", value <= selectedRating);});
+ratingMessage.textContent =`Thank you for rating HowtoCode ${selectedRating}/5 stars!`;clearTimeout(ratingTimer);setTimeout(() => {
+ratingOverlay.style.display = "none";}, 2000);});});
 const developersToggle = document.getElementById("developersToggle");
 const teamMembers = document.getElementById("teamMembers");
 const developersArrow = document.getElementById("developersArrow");
-
-developersToggle.addEventListener("click", () => {
-    teamMembers.classList.toggle("show");
-    developersArrow.classList.toggle("rotated");
-}); 
-    
+developersToggle.addEventListener("click", () => {teamMembers.classList.toggle("show");developersArrow.classList.toggle("rotated");});     
 </script>
 </body>
 </html>
