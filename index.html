@@ -320,6 +320,7 @@ $("#fq").onclick=e=>{const q=e.target.closest(".fq");if(!q)return;const it=q.par
 $("#th").onclick=()=>{const r=document.documentElement;r.dataset.theme=getComputedStyle(r).colorScheme==="dark"?"light":"dark"};
 
 
+
 /* =================================
    HOWTOCODE RATING POPUP
 ================================= */
@@ -331,31 +332,40 @@ const ratingStars = document.querySelectorAll(".star-rating button");
 
 let ratingTimer;
 let selectedRating = 0;
+let hasRated = false;
 
 function showRatingPopup() {
+    if (hasRated) return;
     ratingOverlay.style.display = "flex";
+}
+
+function startRatingTimer() {
+    if (hasRated) return;
+
+    clearTimeout(ratingTimer);
+
+    ratingTimer = setTimeout(() => {
+        showRatingPopup();
+    }, 3 * 60 * 1000);
 }
 
 function hideRatingPopup() {
     ratingOverlay.style.display = "none";
-
-    // Reset the timer after closing
-    clearTimeout(ratingTimer);
-    ratingTimer = setTimeout(showRatingPopup, 3 * 60 * 1000);
+    startRatingTimer();
 }
 
-// Show popup after 5 minutes
-ratingTimer = setTimeout(showRatingPopup, 3 * 60 * 1000);
+// Initial 3-minute timer
+startRatingTimer();
 
-// Close button
+// Close button: show again after 3 minutes
 closeRating.addEventListener("click", hideRatingPopup);
 
 // Star selection
 ratingStars.forEach((star) => {
     star.addEventListener("click", () => {
         selectedRating = Number(star.dataset.rating);
+        hasRated = true;
 
-        // Highlight selected stars
         ratingStars.forEach((item) => {
             const value = Number(item.dataset.rating);
             item.classList.toggle("active", value <= selectedRating);
@@ -364,14 +374,14 @@ ratingStars.forEach((star) => {
         ratingMessage.textContent =
             `Thank you for rating HowtoCode ${selectedRating}/5 stars!`;
 
-        // Close and restart timer after 2 seconds
         clearTimeout(ratingTimer);
 
-        ratingTimer = setTimeout(() => {
-            hideRatingPopup();
+        setTimeout(() => {
+            ratingOverlay.style.display = "none";
         }, 2000);
     });
 });
+
     
     
 </script>
