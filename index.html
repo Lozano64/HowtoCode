@@ -97,31 +97,31 @@ footer{background:var(--bar);color:#9c95b8;text-align:center;padding:30px 20px;f
 .about {text-align: center;padding: 70px 20px;}.about p {max-width: 700px;margin: 0 auto 30px;line-height: 1.8;}
 .about h3 {margin: 35px 0 20px;}
 
+
 .team-members {
     display: none;
-    overflow: hidden;
     width: 100%;
+    overflow: hidden;
     margin-top: 25px;
 }
 
 .team-members.show {
-    display: flex;
+    display: block;
 }
 
 .team-track {
     display: flex;
+    align-items: center;
     width: max-content;
-    gap: 20px;
-    animation: developerTrain 15s linear infinite;
+    gap: 55px;
+    animation: developerTrain 20s linear infinite;
 }
 
-.team-member {
-    flex: 0 0 240px;
-    padding: 22px;
-    border-radius: 15px;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    text-align: center;
+.team-track span {
+    white-space: nowrap;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--peach);
 }
 
 @keyframes developerTrain {
@@ -132,6 +132,7 @@ footer{background:var(--bar);color:#9c95b8;text-align:center;padding:30px 20px;f
         transform: translateX(-50%);
     }
 }
+
 
 
 
@@ -305,36 +306,20 @@ footer{background:var(--bar);color:#9c95b8;text-align:center;padding:30px 20px;f
 </button>
 
 
+
 <div class="team-members" id="teamMembers">
     <div class="team-track">
+        <span>Cornelio Sebastian Lozano</span>
+        <span>Euneko Nathan Tibudan</span>
+        <span>Anne Bayadas</span>
 
-        <div class="team-member">
-            <h4>Cornelio Sebastian Lozano</h4>
-        </div>
-
-        <div class="team-member">
-            <h4>Euneko Nathan Tibudan</h4>
-        </div>
-
-        <div class="team-member">
-            <h4>Anne Bayadas</h4>
-        </div>
-
-        <!-- Duplicate cards for seamless looping -->
-        <div class="team-member">
-            <h4>Cornelio Sebastian Lozano</h4>
-        </div>
-
-        <div class="team-member">
-            <h4>Euneko Nathan Tibudan</h4>
-        </div>
-
-        <div class="team-member">
-            <h4>Anne Bayadas</h4>
-        </div>
-
+        <!-- Repeated names for seamless animation -->
+        <span>Cornelio Sebastian Lozano</span>
+        <span>Euneko Nathan Tibudan</span>
+        <span>Anne Bayadas</span>
     </div>
 </div>
+
 
 </section>
 
