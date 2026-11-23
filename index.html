@@ -96,16 +96,43 @@ footer{background:var(--bar);color:#9c95b8;text-align:center;padding:30px 20px;f
 
 .about {text-align: center;padding: 70px 20px;}.about p {max-width: 700px;margin: 0 auto 30px;line-height: 1.8;}
 .about h3 {margin: 35px 0 20px;}
+
 .team-members {
     display: none;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 20px;
+    overflow: hidden;
+    width: 100%;
+    margin-top: 25px;
 }
 
 .team-members.show {
     display: flex;
 }
+
+.team-track {
+    display: flex;
+    width: max-content;
+    gap: 20px;
+    animation: developerTrain 15s linear infinite;
+}
+
+.team-member {
+    flex: 0 0 240px;
+    padding: 22px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    text-align: center;
+}
+
+@keyframes developerTrain {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
 
 
 .developers-toggle {
@@ -118,25 +145,12 @@ footer{background:var(--bar);color:#9c95b8;text-align:center;padding:30px 20px;f
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
-    animation: developerPulse 2s ease-in-out infinite;
     transition: background 0.3s;
 }
 
 .developers-toggle:hover {
     background: var(--at);
 }
-
-@keyframes developerPulse {
-    0%, 100% {
-        transform: translateY(0);
-        box-shadow: 0 0 0 rgba(255, 200, 87, 0);
-    }
-    50% {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 18px rgba(255, 200, 87, 0.3);
-    }
-}
-
 
 #developersArrow {
     display: inline-block;
@@ -290,10 +304,38 @@ footer{background:var(--bar);color:#9c95b8;text-align:center;padding:30px 20px;f
     Meet Our Developers <span id="developersArrow">▼</span>
 </button>
 
+
 <div class="team-members" id="teamMembers">
-<div class="team-member"><h4>Cornelio Sebastian Lozano</h4></div>
-<div class="team-member"><h4>Euneko Nathan Tibudan</h4></div>
-<div class="team-member"><h4>Anne Bayadas</h4></div></div>
+    <div class="team-track">
+
+        <div class="team-member">
+            <h4>Cornelio Sebastian Lozano</h4>
+        </div>
+
+        <div class="team-member">
+            <h4>Euneko Nathan Tibudan</h4>
+        </div>
+
+        <div class="team-member">
+            <h4>Anne Bayadas</h4>
+        </div>
+
+        <!-- Duplicate cards for seamless looping -->
+        <div class="team-member">
+            <h4>Cornelio Sebastian Lozano</h4>
+        </div>
+
+        <div class="team-member">
+            <h4>Euneko Nathan Tibudan</h4>
+        </div>
+
+        <div class="team-member">
+            <h4>Anne Bayadas</h4>
+        </div>
+
+    </div>
+</div>
+
 </section>
 
 
