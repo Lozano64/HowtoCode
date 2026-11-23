@@ -196,17 +196,31 @@ footer{background:var(--bar);color:#9c95b8;text-align:center;padding:30px 20px;f
 <div class="team-member"><h4>Anne Bayadas</h4></div></div>
 </section>
 
-<section class="rating-section" id="rate-us">
-    <h2>Rate HowtoCode</h2>
-    <p>How was your learning experience?</p>
 
-    <div class="star-rating">
-        <button type="button" data-rating="1" aria-label="1 star">★</button>
-        <button type="button" data-rating="2" aria-label="2 stars">★</button>
-        <button type="button" data-rating="3" aria-label="3 stars">★</button>
-        <button type="button" data-rating="4" aria-label="4 stars">★</button>
-        <button type="button" data-rating="5" aria-label="5 stars">★</button>
+<div class="rating-overlay" id="ratingOverlay">
+    <div class="rating-popup" role="dialog" aria-modal="true" aria-labelledby="ratingTitle">
+
+        <button class="rating-close" id="closeRating" type="button" aria-label="Close rating popup">
+            &times;
+        </button>
+
+        <h2 id="ratingTitle">Rate HowtoCode</h2>
+
+        <p>How was your learning experience?</p>
+
+        <div class="star-rating">
+            <button type="button" data-rating="1" aria-label="1 star">★</button>
+            <button type="button" data-rating="2" aria-label="2 stars">★</button>
+            <button type="button" data-rating="3" aria-label="3 stars">★</button>
+            <button type="button" data-rating="4" aria-label="4 stars">★</button>
+            <button type="button" data-rating="5" aria-label="5 stars">★</button>
+        </div>
+
+        <p id="rating-message">Select your rating from 1 to 5 stars.</p>
+
     </div>
+</div>
+
 
     <p id="rating-message">Select your rating from 1 to 5 stars.</p>
 </section>
