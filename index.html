@@ -341,11 +341,11 @@ function hideRatingPopup() {
 
     // Reset the timer after closing
     clearTimeout(ratingTimer);
-    ratingTimer = setTimeout(showRatingPopup, 5 * 60 * 1000);
+    ratingTimer = setTimeout(showRatingPopup, 3 * 60 * 1000);
 }
 
 // Show popup after 5 minutes
-ratingTimer = setTimeout(showRatingPopup, 5 * 60 * 1000);
+ratingTimer = setTimeout(showRatingPopup, 3 * 60 * 1000);
 
 // Close button
 closeRating.addEventListener("click", hideRatingPopup);
